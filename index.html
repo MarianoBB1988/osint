@@ -1,0 +1,1855 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OSINT Lab — Clase de Ciberseguridad</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:       #0d1117;
+      --bg2:      #161b22;
+      --bg3:      #21262d;
+      --border:   #30363d;
+      --green:    #3fb950;
+      --cyan:     #58a6ff;
+      --yellow:   #d29922;
+      --red:      #f85149;
+      --text:     #c9d1d9;
+      --muted:    #8b949e;
+      --white:    #f0f6fc;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    #matrix-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.18;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Geist', 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+    }
+
+    header, .tabs, .tab-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    header .logo {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--green);
+      letter-spacing: 2px;
+      font-family: 'Geist Mono', monospace;
+    }
+    header .logo span { color: var(--cyan); }
+    header .subtitle {
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    .badge {
+      margin-left: auto;
+      background: #0e4429;
+      color: var(--green);
+      border: 1px solid #238636;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-family: 'Geist Mono', monospace;
+    }
+
+    /* ── TABS ── */
+    .tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      background: var(--bg2);
+    }
+    .tab-btn {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--muted);
+      padding: 0.85rem 1.5rem;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .tab-btn:hover { color: var(--white); }
+    .tab-btn.active {
+      color: var(--white);
+      border-bottom-color: var(--cyan);
+    }
+    .tab-icon { font-size: 1rem; }
+
+    /* ── CONTENT ── */
+    .tab-content { display: none; padding: 2rem; max-width: 960px; margin: 0 auto; }
+    .tab-content.active { display: block; }
+
+    /* ── INTRO SECTION ── */
+    .section-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 0.5rem;
+    }
+    .section-subtitle {
+      color: var(--muted);
+      margin-bottom: 2rem;
+      font-size: 0.95rem;
+    }
+
+    .definition-box {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--cyan);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .definition-box p {
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: var(--text);
+    }
+    .definition-box .highlight { color: var(--cyan); font-weight: 600; }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      transition: border-color 0.2s;
+    }
+    .card:hover { border-color: var(--cyan); }
+    .card .card-icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
+    .card .card-title { font-weight: 600; color: var(--white); margin-bottom: 0.3rem; font-size: 0.95rem; }
+    .card .card-desc { color: var(--muted); font-size: 0.82rem; line-height: 1.5; }
+
+    .h2 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--white);
+      margin: 2rem 0 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .h2::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+      margin-left: 0.5rem;
+    }
+
+    .pillars {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+    .pillar {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+    }
+    .pillar .num {
+      font-family: 'Geist Mono', monospace;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--green);
+    }
+    .pillar .pillar-name { font-size: 0.85rem; color: var(--white); font-weight: 600; margin: 0.25rem 0; }
+    .pillar .pillar-desc { font-size: 0.75rem; color: var(--muted); line-height: 1.4; }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+    .tool-chip {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-family: 'Geist Mono', monospace;
+      color: var(--green);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .example-box {
+      background: #161b22;
+      border: 1px solid #238636;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .example-box .ex-title {
+      color: var(--green);
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .example-box ul {
+      padding-left: 1.25rem;
+      color: var(--text);
+      font-size: 0.9rem;
+      line-height: 1.8;
+    }
+
+    /* ── EXERCISE SECTION ── */
+    .mission-header {
+      background: linear-gradient(135deg, #161b22, #1a2332);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--yellow);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+    .mission-badge {
+      background: #2d1f00;
+      border: 1px solid var(--yellow);
+      color: var(--yellow);
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-family: 'Geist Mono', monospace;
+      font-size: 0.8rem;
+      white-space: nowrap;
+      font-weight: 700;
+    }
+    .mission-text h3 { color: var(--white); margin-bottom: 0.4rem; font-size: 1.1rem; }
+    .mission-text p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+    .mission-text .objective {
+      margin-top: 0.75rem;
+      color: var(--yellow);
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .tweet-container {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      max-width: 560px;
+      margin: 0 auto 2rem;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+    .tweet-header {
+      background: #1c2333;
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .tweet-avatar {
+      width: 40px; height: 40px;
+      background: var(--bg3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      border: 1px solid var(--border);
+    }
+    .tweet-user .name { color: var(--white); font-weight: 600; font-size: 0.9rem; }
+    .tweet-user .handle { color: var(--muted); font-size: 0.8rem; }
+    .tweet-x { margin-left: auto; color: var(--muted); font-size: 1.1rem; }
+    .tweet-body { padding: 1rem; }
+    .translate-bar {
+      background: #0d1117;
+      color: var(--muted);
+      font-size: 0.75rem;
+      padding: 0.4rem 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .tweet-text {
+      color: var(--text);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 0.75rem;
+    }
+    .tweet-text .highlight-word {
+      background: rgba(88,166,255,0.15);
+      color: var(--cyan);
+      padding: 0 3px;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+    .tweet-image-area {
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .tweet-meta {
+      color: var(--muted);
+      font-size: 0.8rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border);
+      margin-top: 0.75rem;
+    }
+
+    /* ── STEPS ── */
+    .steps-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .step {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .step.active { border-color: var(--cyan); }
+    .step.done { border-color: var(--green); }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      cursor: pointer;
+      user-select: none;
+    }
+    .step-num {
+      width: 32px; height: 32px;
+      background: var(--bg3);
+      border: 2px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Geist Mono', monospace;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--muted);
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+    .step.active .step-num {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      background: rgba(88,166,255,0.1);
+    }
+    .step.done .step-num {
+      border-color: var(--green);
+      background: #0e4429;
+      color: var(--green);
+    }
+    .step-label {
+      flex: 1;
+    }
+    .step-label .step-title {
+      color: var(--white);
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    .step-label .step-q {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-top: 0.1rem;
+    }
+    .step-chevron {
+      color: var(--muted);
+      font-size: 0.8rem;
+      transition: transform 0.2s;
+    }
+    .step.open .step-chevron { transform: rotate(180deg); }
+
+    .step-body {
+      display: none;
+      padding: 0 1.25rem 1.25rem;
+      border-top: 1px solid var(--border);
+    }
+    .step.open .step-body { display: block; }
+
+    .question-box {
+      background: var(--bg3);
+      border-radius: 6px;
+      padding: 1rem;
+      margin: 0.75rem 0;
+      color: var(--text);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+    .question-box strong { color: var(--white); }
+
+    .hint-btn, .answer-btn {
+      border: none;
+      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-right: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .hint-btn {
+      background: #1f2d1f;
+      color: var(--green);
+      border: 1px solid #238636;
+    }
+    .hint-btn:hover { background: #0e4429; }
+
+    .answer-btn {
+      background: #1f1a2d;
+      color: var(--cyan);
+      border: 1px solid #388bfd;
+    }
+    .answer-btn:hover { background: #0c1a2d; }
+
+    .done-btn {
+      background: #0e4429;
+      color: var(--green);
+      border: 1px solid #238636;
+      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      font-family: inherit;
+      cursor: pointer;
+      margin-top: 0.75rem;
+      transition: all 0.2s;
+    }
+    .done-btn:hover { background: #196127; }
+
+    .hint-box, .answer-box {
+      display: none;
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      margin-top: 0.5rem;
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+    .hint-box {
+      background: #1a2d1a;
+      border: 1px solid #238636;
+      color: var(--text);
+    }
+    .answer-box {
+      background: #0c1a2d;
+      border: 1px solid #388bfd;
+      color: var(--text);
+    }
+    .hint-box .hint-label {
+      color: var(--green);
+      font-weight: 700;
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      margin-bottom: 0.4rem;
+    }
+    .answer-box .answer-label {
+      color: var(--cyan);
+      font-weight: 700;
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      margin-bottom: 0.4rem;
+    }
+
+    .tool-ref {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.15rem 0.5rem;
+      font-family: 'Geist Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--yellow);
+      margin: 0 0.1rem;
+    }
+
+    /* ── FINAL ANSWER ── */
+    .final-section {
+      display: none;
+      background: linear-gradient(135deg, #0e2a0e, #0c1a2d);
+      border: 1px solid var(--green);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-top: 1.5rem;
+      text-align: center;
+    }
+    .final-section.visible { display: block; }
+    .final-title {
+      color: var(--green);
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .coords {
+      font-family: 'Geist Mono', monospace;
+      font-size: 2rem;
+      color: var(--white);
+      font-weight: 700;
+      letter-spacing: 2px;
+      margin: 1rem 0;
+    }
+    .coords span { color: var(--cyan); }
+    .final-desc {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+      max-width: 500px;
+      margin: 0 auto 1rem;
+    }
+    .map-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--green);
+      color: #000;
+      padding: 0.6rem 1.4rem;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .map-link:hover { opacity: 0.85; }
+
+    /* ── PROGRESS BAR ── */
+    .progress-bar-wrap {
+      background: var(--bg3);
+      border-radius: 999px;
+      height: 6px;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), var(--cyan));
+      border-radius: 999px;
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+    .progress-label {
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin-bottom: 0.4rem;
+    }
+
+    /* ── METHODOLOGY VISUAL ── */
+    .method-flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+    .method-step {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-size: 0.82rem;
+      text-align: center;
+      flex: 1;
+      min-width: 100px;
+    }
+    .method-step .ms-num {
+      color: var(--cyan);
+      font-family: 'Geist Mono', monospace;
+      font-weight: 700;
+      font-size: 0.75rem;
+      margin-bottom: 0.25rem;
+    }
+    .method-step .ms-name { color: var(--white); font-weight: 600; }
+    .method-arrow {
+      color: var(--border);
+      padding: 0 0.3rem;
+      font-size: 1.2rem;
+    }
+
+    code {
+      font-family: 'Geist Mono', monospace;
+      background: var(--bg3);
+      padding: 0.1rem 0.4rem;
+      border-radius: 3px;
+      font-size: 0.88em;
+      color: var(--green);
+    }
+
+    .warning-box {
+      background: #2d1a00;
+      border: 1px solid #d29922;
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.88rem;
+      color: var(--text);
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+    .warning-box .wi { font-size: 1.2rem; flex-shrink: 0; }
+
+    /* ── MISSION GRID ── */
+    .mission-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .mcard {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+    .mcard:hover {
+      border-color: var(--cyan);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+    .mcard-img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      display: block;
+      border-bottom: 1px solid var(--border);
+    }
+    .mcard-body { padding: 1rem; }
+    .mcard-top { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+    .mcard-num { font-family: 'Geist Mono', monospace; color: var(--muted); font-size: 0.78rem; }
+    .diff-badge {
+      font-size: 0.7rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+    .diff-easy  { background: #0e2a0e; color: var(--green); border: 1px solid #238636; }
+    .diff-med   { background: #2d1f00; color: var(--yellow); border: 1px solid #9e6a03; }
+    .diff-hard  { background: #2d0a0a; color: var(--red); border: 1px solid #da3633; }
+    .diff-info  { background: #0c1a2d; color: var(--cyan); border: 1px solid #388bfd; }
+    .mcard-title { color: var(--white); font-weight: 700; font-size: 1rem; margin-bottom: 0.4rem; }
+    .mcard-desc  { color: var(--muted); font-size: 0.82rem; line-height: 1.5; margin-bottom: 0.75rem; }
+    .mcard-tags  { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+    .mtag {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.72rem;
+      padding: 0.1rem 0.45rem;
+      border-radius: 4px;
+    }
+
+    /* ── MISSION VIEW ── */
+    .mission-view { display: none; }
+    .back-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 0.4rem 0.9rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'Geist', inherit;
+      font-size: 0.85rem;
+      margin-bottom: 1.5rem;
+      transition: all 0.2s;
+    }
+    .back-btn:hover { border-color: var(--cyan); color: var(--white); }
+
+    .anon-icon {
+      filter: drop-shadow(0 0 6px #3fb950);
+      flex-shrink: 0;
+      transition: filter 0.3s;
+    }
+    .anon-icon:hover { filter: drop-shadow(0 0 14px #58a6ff); }
+
+    /* scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<canvas id="matrix-canvas"></canvas>
+
+<header>
+  <svg class="anon-icon" width="38" height="38" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-label="Anonymous mask">
+    <!-- cara base -->
+    <ellipse cx="50" cy="48" rx="34" ry="38" fill="#1a1a1a" stroke="#3fb950" stroke-width="2"/>
+    <!-- frente arriba -->
+    <ellipse cx="50" cy="24" rx="28" ry="14" fill="#222" stroke="#3fb950" stroke-width="1.5"/>
+    <!-- cejas arqueadas -->
+    <path d="M24 35 Q35 26 46 34" stroke="#3fb950" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M54 34 Q65 26 76 35" stroke="#3fb950" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- ojos -->
+    <ellipse cx="36" cy="42" rx="8" ry="5" fill="#0d1117" stroke="#3fb950" stroke-width="1.5"/>
+    <ellipse cx="64" cy="42" rx="8" ry="5" fill="#0d1117" stroke="#3fb950" stroke-width="1.5"/>
+    <ellipse cx="36" cy="42" rx="3" ry="3" fill="#3fb950" opacity="0.7"/>
+    <ellipse cx="64" cy="42" rx="3" ry="3" fill="#3fb950" opacity="0.7"/>
+    <!-- nariz estilizada -->
+    <path d="M50 50 L46 62 Q50 65 54 62 Z" fill="#1a1a1a" stroke="#3fb950" stroke-width="1.2"/>
+    <!-- bigote y sonrisa -->
+    <path d="M28 70 Q50 80 72 70" stroke="#3fb950" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M28 70 Q24 66 28 62" stroke="#3fb950" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M72 70 Q76 66 72 62" stroke="#3fb950" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- línea boca -->
+    <path d="M34 67 Q50 72 66 67" stroke="#3fb950" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <!-- perilla -->
+    <ellipse cx="50" cy="84" rx="6" ry="4" fill="#1a1a1a" stroke="#3fb950" stroke-width="1.5"/>
+  </svg>
+  <div class="logo">OSINT<span>&gt;</span>LAB</div>
+  <div class="subtitle">Clase de Ciberseguridad · Bachillerato</div>
+  <div class="badge">🟢 LIVE</div>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('intro', this)">
+    <span class="tab-icon">📡</span> Introducción a OSINT
+  </button>
+  <button class="tab-btn" onclick="switchTab('ejercicio', this)">
+    <span class="tab-icon">🔍</span> Ejercicio Práctico
+  </button>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--                    TAB 1: INTRO                        -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="tab-intro" class="tab-content active">
+
+  <h1 class="section-title">¿Qué es OSINT?</h1>
+  <p class="section-subtitle">Open Source Intelligence — Inteligencia de Fuentes Abiertas</p>
+
+  <div class="definition-box">
+    <p>
+      <span class="highlight">OSINT</span> es el proceso de recolectar, analizar y usar información
+      que está <span class="highlight">disponible públicamente</span> para obtener inteligencia útil.
+      No se hackea nada, no se accede a nada privado — toda la información ya está
+      <span class="highlight">ahí afuera</span>, visible para cualquiera que sepa dónde y cómo buscar.
+    </p>
+  </div>
+
+  <div class="h2">👥 ¿Quién usa OSINT?</div>
+  <div class="cards-grid">
+    <div class="card">
+      <div class="card-icon">🕵️</div>
+      <div class="card-title">Agencias de inteligencia</div>
+      <div class="card-desc">CIA, Mossad, MI6. Más del 80% de la inteligencia proviene de fuentes abiertas.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔒</div>
+      <div class="card-title">Pentesters</div>
+      <div class="card-desc">Fase de reconocimiento antes de atacar un sistema con autorización.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">📰</div>
+      <div class="card-title">Periodistas</div>
+      <div class="card-desc">Bellingcat investigó crímenes de guerra con solo fotos y Google Maps.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🚔</div>
+      <div class="card-title">Policía y INTERPOL</div>
+      <div class="card-desc">Localizar personas, rastrear redes criminales, identificar sospechosos.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🏢</div>
+      <div class="card-title">Empresas</div>
+      <div class="card-desc">Due diligence, investigar competidores, verificar identidades.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🎓</div>
+      <div class="card-title">Investigadores</div>
+      <div class="card-desc">Verificar hechos, estudiar fenómenos sociales, rastrear desinformación.</div>
+    </div>
+  </div>
+
+  <div class="h2">⚙️ Las 5 fases del proceso OSINT</div>
+  <div class="method-flow">
+    <div class="method-step">
+      <div class="ms-num">01</div>
+      <div class="ms-name">Planificación</div>
+    </div>
+    <div class="method-arrow">›</div>
+    <div class="method-step">
+      <div class="ms-num">02</div>
+      <div class="ms-name">Recolección</div>
+    </div>
+    <div class="method-arrow">›</div>
+    <div class="method-step">
+      <div class="ms-num">03</div>
+      <div class="ms-name">Procesamiento</div>
+    </div>
+    <div class="method-arrow">›</div>
+    <div class="method-step">
+      <div class="ms-num">04</div>
+      <div class="ms-name">Análisis</div>
+    </div>
+    <div class="method-arrow">›</div>
+    <div class="method-step">
+      <div class="ms-num">05</div>
+      <div class="ms-name">Reporte</div>
+    </div>
+  </div>
+
+  <div class="h2">🏛️ Fuentes de información</div>
+  <div class="pillars">
+    <div class="pillar">
+      <div class="num">01</div>
+      <div class="pillar-name">Redes sociales</div>
+      <div class="pillar-desc">Twitter/X, Facebook, Instagram, LinkedIn, TikTok</div>
+    </div>
+    <div class="pillar">
+      <div class="num">02</div>
+      <div class="pillar-name">Buscadores</div>
+      <div class="pillar-desc">Google Dorks, Bing, DuckDuckGo, Yandex</div>
+    </div>
+    <div class="pillar">
+      <div class="num">03</div>
+      <div class="pillar-name">Imágenes y mapas</div>
+      <div class="pillar-desc">Google Maps, Satellite, Street View, Yandex Maps</div>
+    </div>
+    <div class="pillar">
+      <div class="num">04</div>
+      <div class="pillar-name">Registros públicos</div>
+      <div class="pillar-desc">Whois, ARIN, registros judiciales, empresariales</div>
+    </div>
+    <div class="pillar">
+      <div class="num">05</div>
+      <div class="pillar-name">Metadatos</div>
+      <div class="pillar-desc">EXIF de fotos, documentos PDF, archivos de Office</div>
+    </div>
+    <div class="pillar">
+      <div class="num">06</div>
+      <div class="pillar-name">Dark/Deep Web</div>
+      <div class="pillar-desc">Foros, pastes, filtraciones (nivel avanzado)</div>
+    </div>
+  </div>
+
+  <div class="h2">🛠️ Herramientas básicas</div>
+  <div class="tools-grid">
+    <div class="tool-chip">🔎 Google Dorks</div>
+    <div class="tool-chip">🗺️ Google Maps</div>
+    <div class="tool-chip">🖼️ Google Images</div>
+    <div class="tool-chip">🌐 Shodan</div>
+    <div class="tool-chip">📊 Maltego</div>
+    <div class="tool-chip">🔍 theHarvester</div>
+    <div class="tool-chip">📸 ExifTool</div>
+    <div class="tool-chip">🕰️ Wayback Machine</div>
+    <div class="tool-chip">🌍 Yandex Maps</div>
+    <div class="tool-chip">📡 Censys</div>
+    <div class="tool-chip">👤 Spokeo</div>
+    <div class="tool-chip">🔗 IntelTechniques</div>
+  </div>
+
+  <div class="h2">🌍 Caso real: Bellingcat</div>
+  <div class="example-box">
+    <div class="ex-title">📰 Bellingcat — periodismo OSINT</div>
+    <ul>
+      <li>Organización de periodistas que usa <strong>solo fuentes abiertas</strong></li>
+      <li>Identificaron el misil que derribó el vuelo MH17 en Ucrania (2014) usando <strong>fotos de redes sociales y Google Maps</strong></li>
+      <li>Localizaron bases militares secretas analizando <strong>rutas de jogging en Strava</strong></li>
+      <li>Identificaron a los agentes rusos que envenenaron a Sergei Skripal usando <strong>documentos públicos rusos</strong></li>
+      <li>Todo sin acceder a ningún sistema privado — <strong>100% información pública</strong></li>
+    </ul>
+  </div>
+
+  <div class="warning-box">
+    <div class="wi">⚖️</div>
+    <div>
+      <strong style="color:var(--yellow)">Ética y legalidad:</strong>
+      OSINT solo es legal y ético cuando se usa con un <strong>propósito legítimo</strong> (investigación, seguridad, periodismo)
+      y sobre información <strong>realmente pública</strong>. Usar estas técnicas para acosar, stalkear o dañar a personas
+      es ilegal en casi todos los países. La herramienta es neutral — el uso define si es ético o no.
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--                  TAB 2: EJERCICIO                      -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="tab-ejercicio" class="tab-content">
+
+  <!-- ══ MISSION SELECTOR ══ -->
+  <div id="mission-selector">
+    <h1 class="section-title">Elegí tu misión</h1>
+    <p class="section-subtitle">4 desafíos reales de OSINT — todos basados en información pública</p>
+
+    <div class="mission-grid">
+
+      <div class="mcard" onclick="showMission('001')">
+        <img class="mcard-img" src="https://i0.wp.com/gralhix.com/wp-content/uploads/2023/01/osintexercise001.png?resize=583%2C586&ssl=1" alt="Misión 001"/>
+        <div class="mcard-body">
+          <div class="mcard-top">
+            <span class="mcard-num">#001</span>
+            <span class="diff-badge diff-easy">Principiante</span>
+          </div>
+          <div class="mcard-title">Localiza el tweet</div>
+          <div class="mcard-desc">Un usuario comparte una foto de su ciudad en Twitter. Encontrá las coordenadas exactas del lugar.</div>
+          <div class="mcard-tags"><span class="mtag">Geolocalización</span><span class="mtag">Redes sociales</span></div>
+        </div>
+      </div>
+
+      <div class="mcard" onclick="showMission('002')">
+        <img class="mcard-img" src="https://i0.wp.com/gralhix.com/wp-content/uploads/2024/09/osintexercise002.png?resize=720%2C548&ssl=1" alt="Misión 002"/>
+        <div class="mcard-body">
+          <div class="mcard-top">
+            <span class="mcard-num">#002</span>
+            <span class="diff-badge diff-med">Intermedio</span>
+          </div>
+          <div class="mcard-title">La estación de tren</div>
+          <div class="mcard-desc">Una foto muestra claramente una estación ferroviaria. Identificá el nombre y la estructura más alta visible.</div>
+          <div class="mcard-tags"><span class="mtag">Imagen inversa</span><span class="mtag">Arquitectura</span></div>
+        </div>
+      </div>
+
+      <div class="mcard" onclick="showMission('004')">
+        <img class="mcard-img" src="https://i0.wp.com/gralhix.com/wp-content/uploads/2023/08/osintexercise004.webp" alt="Misión 004"/>
+        <div class="mcard-body">
+          <div class="mcard-top">
+            <span class="mcard-num">#004</span>
+            <span class="diff-badge diff-easy">Principiante</span>
+          </div>
+          <div class="mcard-title">Resort en la isla</div>
+          <div class="mcard-desc">Foto de un resort en una isla. Encontrá el nombre, las coordenadas y hacia dónde apuntaba la cámara.</div>
+          <div class="mcard-tags"><span class="mtag">Geolocalización</span><span class="mtag">Orientación</span></div>
+        </div>
+      </div>
+
+      <div class="mcard" onclick="showMission('006')">
+        <img class="mcard-img" src="https://i0.wp.com/gralhix.com/wp-content/uploads/2023/08/osintexercise006.webp?resize=584%2C712&ssl=1" alt="Misión 006"/>
+        <div class="mcard-body">
+          <div class="mcard-top">
+            <span class="mcard-num">#006</span>
+            <span class="diff-badge diff-info">Verificación</span>
+          </div>
+          <div class="mcard-title">¿Desinformación?</div>
+          <div class="mcard-desc">Un periodista publica una foto afirmando que muestra un ataque terrorista. ¿Es verdad? Verificalo.</div>
+          <div class="mcard-tags"><span class="mtag">Fact-checking</span><span class="mtag">Imagen inversa</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ MISSION 001 ══ -->
+  <div id="mission-001" class="mission-view">
+    <button class="back-btn" onclick="backToSelector()">← Volver a misiones</button>
+
+  <div class="mission-header">
+    <div class="mission-badge">MISIÓN #001</div>
+    <div class="mission-badge">MISIÓN #001</div>
+    <div class="mission-text">
+      <h3>Localiza la foto</h3>
+      <p>A la derecha hay un tweet con una fotografía. Contiene toda la información necesaria para encontrar el lugar exacto donde fue tomada la foto.</p>
+      <p class="objective">🎯 Objetivo: Encontrar las coordenadas exactas (latitud, longitud) del punto donde se sacó la foto.</p>
+    </div>
+  </div>
+
+  <!-- TWEET ORIGINAL SCREENSHOT -->
+  <div style="max-width:560px; margin: 0 auto 1.5rem;">
+    <p style="color:var(--muted); font-size:0.78rem; margin-bottom:0.4rem; font-family:'Geist Mono',monospace;">// captura original del tweet</p>
+    <img src="https://i0.wp.com/gralhix.com/wp-content/uploads/2023/01/osintexercise001.png?resize=583%2C586&ssl=1"
+         alt="Captura del tweet original"
+         style="width:100%; border-radius:10px; border:1px solid var(--border); display:block;" />
+  </div>
+
+  <!-- TWEET -->
+  <div class="tweet-container">
+    <div class="translate-bar">
+      <span>🌐</span> Traducido del árabe por Google
+    </div>
+    <div class="tweet-header">
+      <div class="tweet-avatar">👤</div>
+      <div class="tweet-user">
+        <div class="name">Usuario anónimo</div>
+        <div class="handle">@usuario · Mauritania</div>
+      </div>
+      <div class="tweet-x">𝕏</div>
+    </div>
+    <div class="tweet-body">
+      <p class="tweet-text">
+        "Por la mañana, las ciudades muestran su belleza y se presentan a los recién llegados..
+        ¡La hermosa ciudad de <span class="highlight-word">Kiffa</span> ha mostrado sus virtudes esta mañana!!"
+      </p>
+      <div class="tweet-image-area" id="tweet-img-area">
+        <img src="https://gralhix.com/wp-content/uploads/2023/08/osint-exercise-001-big-picture.jpeg" alt="Foto de la ciudad de Kiffa" style="position:relative; width:100%; height:auto; display:block; border-radius:8px;" />
+      </div>
+      <div class="tweet-meta" style="display:flex; justify-content:space-between; align-items:center;">
+        <span>🕐 1:45 PM · 20 feb 2013</span>
+        <a href="https://gralhix.com/wp-content/uploads/2023/08/osint-exercise-001-big-picture.jpeg" target="_blank" style="color:var(--cyan); font-size:0.78rem; text-decoration:none;">🔍 Ver foto completa ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <p class="progress-label">Progreso: <span id="m001-progress-text">0 / 5 pasos</span></p>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="m001-progress-bar"></div>
+  </div>
+
+  <!-- STEPS -->
+  <div class="steps-title">📋 Pasos para resolver el ejercicio</div>
+
+  <!-- PASO 1 -->
+  <div class="step" id="m001-step-1">
+    <div class="step-header" onclick="toggleStep('001',1)">
+      <div class="step-num" id="m001-num-1">1</div>
+      <div class="step-label">
+        <div class="step-title">Lee el tweet con atención</div>
+        <div class="step-q">¿Qué información explícita te da el texto?</div>
+      </div>
+      <div class="step-chevron">▼</div>
+    </div>
+    <div class="step-body">
+      <div class="question-box">
+        <strong>Antes de mirar la foto</strong>, leé el texto del tweet completo.
+        Anotá en un papel todo lo que aprendés <em>solo</em> del texto:<br><br>
+        • ¿Menciona algún lugar?<br>
+        • ¿En qué momento del día fue tomada?<br>
+        • ¿Cuándo fue publicado el tweet?<br>
+        • ¿En qué idioma fue escrito originalmente?
+      </div>
+      <button class="hint-btn" onclick="toggleHint('h1')">💡 Ver pista</button>
+      <button class="answer-btn" onclick="toggleAnswer('a1')">✓ Ver respuesta</button>
+      <div class="hint-box" id="h1">
+        <div class="hint-label">PISTA</div>
+        Fijate bien en la frase "la hermosa ciudad de ___". El texto original es en árabe —
+        eso nos dice algo sobre la región del mundo. El tweet tiene fecha y hora específicas.
+      </div>
+      <div class="answer-box" id="a1">
+        <div class="answer-label">RESPUESTA</div>
+        ✅ <strong>Ciudad mencionada:</strong> <code>Kiffa</code><br>
+        ✅ <strong>Momento:</strong> de mañana (lo dice el texto)<br>
+        ✅ <strong>Fecha:</strong> 20 de febrero de 2013, 1:45 PM<br>
+        ✅ <strong>Idioma original:</strong> árabe → región de Medio Oriente o Norte/Oeste de África<br><br>
+        👉 El texto nos da la ciudad directamente. Esto no siempre pasa — aprovechalo.
+      </div>
+      <br>
+      <button class="done-btn" onclick="markDone('001',1,5)">✓ Listo, siguiente paso</button>
+    </div>
+  </div>
+
+  <!-- PASO 2 -->
+  <div class="step" id="m001-step-2">
+    <div class="step-header" onclick="toggleStep('001',2)">
+      <div class="step-num" id="m001-num-2">2</div>
+      <div class="step-label">
+        <div class="step-title">Analizá la imagen</div>
+        <div class="step-q">¿Qué pistas visuales hay en la fotografía?</div>
+      </div>
+      <div class="step-chevron">▼</div>
+    </div>
+    <div class="step-body">
+      <div class="question-box">
+        Ahora mirá la foto detenidamente. Anotá todo lo que observás:<br><br>
+        • ¿Qué tipo de arquitectura ves? ¿Es occidental, tropical, desértica?<br>
+        • ¿Qué vegetación hay?<br>
+        • ¿Qué ropa llevan las personas?<br>
+        • ¿Hay algún edificio que destaque?<br>
+        • ¿Las sombras confirman la hora del tweet?<br>
+        • ¿Cómo es el camino/calle?
+      </div>
+      <button class="hint-btn" onclick="toggleHint('h2')">💡 Ver pista</button>
+      <button class="answer-btn" onclick="toggleAnswer('a2')">✓ Ver respuesta</button>
+      <div class="hint-box" id="h2">
+        <div class="hint-label">PISTA</div>
+        Prestá atención al árbol que se ve al fondo (es una acacia, típica del Sahel africano).
+        La persona vestida de azul lleva una <em>boubou</em>, ropa tradicional del África Occidental.
+        El edificio de la izquierda tiene colores muy llamativos — podría ser tu ancla para el mapa.
+      </div>
+      <div class="answer-box" id="a2">
+        <div class="answer-label">RESPUESTA</div>
+        ✅ <strong>Arquitectura:</strong> bloque bajo de cemento, sin techar — típico del Sahel<br>
+        ✅ <strong>Vegetación:</strong> acacia africana → confirma zona subsahariana/Sahel<br>
+        ✅ <strong>Ropa:</strong> boubou azul → África Occidental (Mauritania, Mali, Senegal)<br>
+        ✅ <strong>Edificio destacado:</strong> arcos de colores llamativos en la izquierda — <em>ancla visual</em><br>
+        ✅ <strong>Sombras:</strong> largas hacia el oeste → confirma que es por la mañana<br>
+        ✅ <strong>Calle:</strong> tierra roja, no asfaltada, intersección de caminos
+      </div>
+      <br>
+      <button class="done-btn" onclick="markDone('001',2,5)">✓ Listo, siguiente paso</button>
+    </div>
+  </div>
+
+  <!-- PASO 3 -->
+  <div class="step" id="m001-step-3">
+    <div class="step-header" onclick="toggleStep('001',3)">
+      <div class="step-num" id="m001-num-3">3</div>
+      <div class="step-label">
+        <div class="step-title">Localizá la ciudad en el mapa</div>
+        <div class="step-q">¿En qué país está Kiffa? ¿Dónde exactamente?</div>
+      </div>
+      <div class="step-chevron">▼</div>
+    </div>
+    <div class="step-body">
+      <div class="question-box">
+        Ahora que sabemos el nombre de la ciudad, usá <span class="tool-ref">🗺️ Google Maps</span> para encontrarla.<br><br>
+        • Buscá <code>Kiffa</code> en Google Maps<br>
+        • ¿En qué país está?<br>
+        • ¿Qué región del mundo?<br>
+        • ¿Confirma lo que vimos en la foto?<br><br>
+        También podés buscar <code>Kiffa Mauritania</code> en Google para obtener más contexto.
+      </div>
+      <button class="hint-btn" onclick="toggleHint('h3')">💡 Ver pista</button>
+      <button class="answer-btn" onclick="toggleAnswer('a3')">✓ Ver respuesta</button>
+      <div class="hint-box" id="h3">
+        <div class="hint-label">PISTA</div>
+        Mauritania está en el noroeste de África, justo al sur del Sáhara.
+        Es un país de habla árabe con influencia de cultura subsahariana — eso explica el árabe del tweet
+        y la vestimenta africana. Kiffa es la capital de la región de Assaba.
+      </div>
+      <div class="answer-box" id="a3">
+        <div class="answer-label">RESPUESTA</div>
+        ✅ <strong>País:</strong> Mauritania 🇲🇷 (noroeste de África)<br>
+        ✅ <strong>Región:</strong> Assaba<br>
+        ✅ <strong>Coordenadas aproximadas de la ciudad:</strong> 16.62°N, 11.40°W<br>
+        ✅ <strong>Confirmación:</strong> país árabe + África subsahariana = encaja perfectamente<br><br>
+        👉 Google Maps te muestra la ciudad. Ahora hay que encontrar la calle exacta.
+      </div>
+      <br>
+      <button class="done-btn" onclick="markDone('001',3,5)">✓ Listo, siguiente paso</button>
+    </div>
+  </div>
+
+  <!-- PASO 4 -->
+  <div class="step" id="m001-step-4">
+    <div class="step-header" onclick="toggleStep('001',4)">
+      <div class="step-num" id="m001-num-4">4</div>
+      <div class="step-label">
+        <div class="step-title">Encontrá la calle exacta</div>
+        <div class="step-q">¿En qué intersección exacta fue tomada la foto?</div>
+      </div>
+      <div class="step-chevron">▼</div>
+    </div>
+    <div class="step-body">
+      <div class="question-box">
+        Este es el paso más desafiante. Usá la <strong>vista satelital</strong> de Google Maps para recorrer Kiffa.<br><br>
+        • Activá vista satelital en Google Maps<br>
+        • Buscá el edificio con arcos de colores (rosa/rojo y verde) que se ve en la foto<br>
+        • Es un edificio inusual para la zona — debería destacarse<br>
+        • También podés usar <span class="tool-ref">🌍 Yandex Maps</span> (tiene mejor cobertura satelital en África)<br>
+        • Buscá una intersección de caminos con ese patrón de edificios<br><br>
+        <strong>Tip:</strong> La foto fue tomada mirando hacia el norte/noreste (por las sombras matutinas).
+        El edificio colorido está a la <em>izquierda</em> del fotógrafo.
+      </div>
+      <button class="hint-btn" onclick="toggleHint('h4')">💡 Ver pista</button>
+      <button class="answer-btn" onclick="toggleAnswer('a4')">✓ Ver respuesta</button>
+      <div class="hint-box" id="h4">
+        <div class="hint-label">PISTA</div>
+        Busca el centro de Kiffa en vista satelital. El edificio colorido parece estar sobre
+        una de las calles principales de la ciudad. Las ciudades de Mauritania no son muy grandes —
+        no hay demasiadas opciones. Recorre las calles principales desde el centro.
+      </div>
+      <div class="answer-box" id="a4">
+        <div class="answer-label">RESPUESTA</div>
+        ✅ El edificio colorido se encuentra en una calle principal de <strong>Kiffa</strong><br>
+        ✅ La intersección es identificable por la combinación: edificio con arcos de colores + camino de tierra + árboles al fondo<br>
+        ✅ La foto fue tomada desde el <strong>sur mirando hacia el norte</strong><br><br>
+        👉 Una vez que encontrás el edificio, hacé clic derecho sobre el punto exacto en Google Maps para obtener las coordenadas.
+      </div>
+      <br>
+      <button class="done-btn" onclick="markDone('001',4,5)">✓ Listo, siguiente paso</button>
+    </div>
+  </div>
+
+  <!-- PASO 5 -->
+  <div class="step" id="m001-step-5">
+    <div class="step-header" onclick="toggleStep('001',5)">
+      <div class="step-num" id="m001-num-5">5</div>
+      <div class="step-label">
+        <div class="step-title">Extraé las coordenadas</div>
+        <div class="step-q">¿Cuáles son las coordenadas exactas del punto?</div>
+      </div>
+      <div class="step-chevron">▼</div>
+    </div>
+    <div class="step-body">
+      <div class="question-box">
+        Ya tenés la ubicación. Ahora extraé las coordenadas:<br><br>
+        • En Google Maps: <strong>clic derecho</strong> sobre el punto → aparecen las coordenadas<br>
+        • El formato es: <code>latitud, longitud</code> (ej: <code>16.612, -11.404</code>)<br>
+        • Latitud positiva = hemisferio norte<br>
+        • Longitud negativa = hemisferio oeste<br><br>
+        <strong>¿Cómo sabés si encontraste el punto correcto?</strong><br>
+        Verificá que desde ese punto, mirando hacia el norte, la escena de la foto tenga sentido.
+      </div>
+      <button class="hint-btn" onclick="toggleHint('h5')">💡 Ver pista</button>
+      <button class="answer-btn" onclick="toggleAnswer('a5')">✓ Ver respuesta</button>
+      <div class="hint-box" id="h5">
+        <div class="hint-label">PISTA</div>
+        Las coordenadas de Kiffa rondan los 16.6°N y 11.4°W.
+        El punto exacto debería estar en una de las calles principales del centro de la ciudad.
+        Verificá con Street View si está disponible, o comparando la imagen satelital con la foto.
+      </div>
+      <div class="answer-box" id="a5">
+        <div class="answer-label">RESPUESTA FINAL</div>
+        ✅ <strong>Coordenadas:</strong> <code>16.6159° N, 11.4046° W</code><br>
+        ✅ <strong>Lugar:</strong> Calle principal de Kiffa, Mauritania<br>
+        ✅ <strong>Verificación:</strong> El edificio colorido con arcos es visible en vista satelital<br><br>
+        🎉 ¡Misión completada usando solo un tweet público!
+      </div>
+      <br>
+      <button class="done-btn" onclick="markDone('001',5,5)">✓ ¡Completé el ejercicio!</button>
+    </div>
+  </div>
+
+  <!-- FINAL ANSWER -->
+  <div class="final-section" id="m001-final">
+    <div class="final-title">🎯 ¡Misión Completada!</div>
+    <p style="color:var(--muted); font-size:0.9rem; margin-bottom:0.5rem;">Ubicación identificada:</p>
+    <div class="coords"><span>16.6159° N</span> · <span>11.4046° W</span></div>
+    <p class="final-desc">
+      Encontraste la ubicación exacta de una foto usando <strong>solo un tweet público</strong>.
+      Sin hackear nada. Sin acceder a sistemas privados. Solo información abierta, observación y herramientas gratuitas.
+      Eso es OSINT.
+    </p>
+    <a class="map-link" href="https://www.google.com/maps/place/16.6159,-11.4046" target="_blank">
+      🗺️ Ver en Google Maps
+    </a>
+    <div style="margin-top:1.5rem; background:var(--bg3); border-radius:8px; padding:1rem; text-align:left; max-width:480px; margin-left:auto; margin-right:auto;">
+      <div style="color:var(--cyan); font-size:0.8rem; font-weight:700; margin-bottom:0.5rem;">📖 LO QUE APRENDISTE HOY</div>
+      <ul style="color:var(--muted); font-size:0.85rem; padding-left:1.2rem; line-height:1.8;">
+        <li>Los <strong style="color:var(--white)">metadatos</strong> de una publicación son información valiosa</li>
+        <li>Las <strong style="color:var(--white)">pistas visuales</strong> en fotos pueden revelar ubicación</li>
+        <li>El <strong style="color:var(--white)">contexto cultural</strong> (ropa, árboles, arquitectura) ayuda a filtrar</li>
+        <li>El <strong style="color:var(--white)">pivoting</strong>: tweet → ciudad → calle → coordenadas</li>
+        <li>Google Maps + vista satelital son herramientas OSINT poderosas</li>
+      </ul>
+    </div>
+  </div>
+
+  </div><!-- /mission-001 -->
+
+  <!-- ══ MISSION 002 ══ -->
+  <div id="mission-002" class="mission-view">
+    <button class="back-btn" onclick="backToSelector()">← Volver a misiones</button>
+
+    <div class="mission-header">
+      <div class="mission-badge">MISIÓN #002</div>
+      <div class="mission-text">
+        <h3>La estación de tren</h3>
+        <p>Una foto muestra claramente una estación ferroviaria. Usando búsqueda inversa de imágenes y análisis visual, identificá el nombre de la estación y la estructura más alta visible en la foto.</p>
+        <p class="objective">🎯 Objetivos: a) Nombre de la estación de tren &nbsp;|&nbsp; b) Nombre y altura de la estructura más alta visible</p>
+      </div>
+    </div>
+
+    <div style="max-width:640px; margin: 0 auto 2rem; text-align:center;">
+      <p style="color:var(--muted); font-size:0.78rem; margin-bottom:0.6rem; font-family:'Geist Mono',monospace;">// imagen del ejercicio</p>
+      <img src="https://gralhix.com/wp-content/uploads/2024/09/osint-exercise-002-big-picture.png"
+           alt="Estación de tren"
+           style="width:100%; border-radius:10px; border:1px solid var(--border);" />
+      <div style="text-align:right; margin-top:0.4rem;">
+        <a href="https://gralhix.com/wp-content/uploads/2024/09/osint-exercise-002-big-picture.png" target="_blank" style="color:var(--cyan); font-size:0.78rem; text-decoration:none;">🔍 Ver foto completa ↗</a>
+      </div>
+    </div>
+
+    <p class="progress-label">Progreso: <span id="m002-progress-text">0 / 5 pasos</span></p>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="m002-progress-bar"></div></div>
+    <div class="steps-title">📋 Pasos para resolver el ejercicio</div>
+
+    <div class="step" id="m002-step-1">
+      <div class="step-header" onclick="toggleStep('002',1)">
+        <div class="step-num" id="m002-num-1">1</div>
+        <div class="step-label"><div class="step-title">Observar la imagen</div><div class="step-q">¿Qué pistas visuales tiene la estación?</div></div>
+        <div class="step-chevron">▼</div>
+      </div>
+      <div class="step-body">
+        <div class="question-box">
+          Mirá la foto con atención antes de hacer cualquier búsqueda:<br><br>
+          • ¿Qué estilo arquitectónico tiene la estación? (moderna, antigua, clásica europea...)<br>
+          • ¿Hay letreros, números o texto visible en la imagen?<br>
+          • ¿Qué tipo de tren/vagones se ven?<br>
+          • ¿El andén es elevado o al ras del suelo?<br>
+          • ¿Qué se ve en el fondo o por las ventanas?
+        </div>
+        <button class="hint-btn" onclick="toggleHint('m002-h1')">💡 Ver pista</button>
+        <button class="answer-btn" onclick="toggleAnswer('m002-a1')">✓ Ver respuesta</button>
+        <div class="hint-box" id="m002-h1"><div class="hint-label">PISTA</div>Prestá atención al estilo de construcción — ¿parece europeo, asiático, americano? Los vagones y la señalización ferroviaria suelen ser muy específicos de cada país.</div>
+        <div class="answer-box" id="m002-a1"><div class="answer-label">RESPUESTA</div>✅ La estación tiene una <strong>marquesina de acero y vidrio</strong> estilo europeo clásico del siglo XIX-XX<br>✅ Los vagones y las vías sugieren sistema ferroviario europeo<br>✅ La arquitectura tiene elementos ornamentales característicos de estaciones históricas<br><br>👉 Con estas pistas ya podemos hacer una búsqueda más efectiva.</div>
+        <br><button class="done-btn" onclick="markDone('002',1,5)">✓ Listo, siguiente paso</button>
+      </div>
+    </div>
+
+    <div class="step" id="m002-step-2">
+      <div class="step-header" onclick="toggleStep('002',2)">
+        <div class="step-num" id="m002-num-2">2</div>
+        <div class="step-label"><div class="step-title">Búsqueda inversa de imagen</div><div class="step-q">¿Qué herramienta usar para identificar el lugar?</div></div>
+        <div class="step-chevron">▼</div>
+      </div>
+      <div class="step-body">
+        <div class="question-box">
+          Ahora usá la imagen para buscar quién la publicó antes o dónde aparece:<br><br>
+          • <strong>Google Lens:</strong> abrí la imagen → clic derecho → "Buscar imagen con Google"<br>
+          • <strong>TinEye.com:</strong> pegá la URL de la imagen o subí el archivo<br>
+          • <strong>Yandex Images:</strong> yandex.com/images → icono de cámara → pegá URL<br><br>
+          Yandex suele dar mejores resultados para arquitectura europea que Google.
+        </div>
+        <button class="hint-btn" onclick="toggleHint('m002-h2')">💡 Ver pista</button>
+        <button class="answer-btn" onclick="toggleAnswer('m002-a2')">✓ Ver respuesta</button>
+        <div class="hint-box" id="m002-h2"><div class="hint-label">PISTA</div>Probá primero con Google Lens sobre la foto completa. Si no da resultado, recortá solo la parte de la marquesina o la fachada de la estación y buscá eso.</div>
+        <div class="answer-box" id="m002-a2"><div class="answer-label">RESPUESTA</div>✅ La búsqueda reversa debería devolver resultados relacionados con una <strong>estación ferroviaria europea</strong><br>✅ Yandex Images da resultados más precisos para este tipo de imágenes<br>✅ Filtrá los resultados buscando el nombre de la estación en los títulos de las páginas</div>
+        <br><button class="done-btn" onclick="markDone('002',2,5)">✓ Listo, siguiente paso</button>
+      </div>
+    </div>
+
+    <div class="step" id="m002-step-3">
+      <div class="step-header" onclick="toggleStep('002',3)">
+        <div class="step-num" id="m002-num-3">3</div>
+        <div class="step-label"><div class="step-title">Identificar la estación</div><div class="step-q">¿Cuál es el nombre de la estación?</div></div>
+        <div class="step-chevron">▼</div>
+      </div>
+      <div class="step-body">
+        <div class="question-box">
+          Con los resultados de la búsqueda inversa, confirmá el nombre de la estación:<br><br>
+          • Buscá el nombre en Google Maps para verificar que la estación existe<br>
+          • Compará la foto original con imágenes en Google Street View o en la Wikipedia<br>
+          • ¿Coinciden la marquesina, los andenes, el estilo?
+        </div>
+        <button class="hint-btn" onclick="toggleHint('m002-h3')">💡 Ver pista</button>
+        <button class="answer-btn" onclick="toggleAnswer('m002-a3')">✓ Ver respuesta</button>
+        <div class="hint-box" id="m002-h3"><div class="hint-label">PISTA</div>La estación tiene una cubierta metálica muy característica. Buscá "train station glass roof Europe" en Google Images y comparé con lo que ves en la foto.</div>
+        <div class="answer-box" id="m002-a3"><div class="answer-label">RESPUESTA</div>✅ <strong>Verificá tu respuesta</strong> contra la solución oficial en gralhix.com/osint-exercise-002/<br>✅ La verificación cruzada es clave: imagen satelital + foto en Wikipedia deben coincidir<br><br>👉 ¿Encontraste el nombre? Anotalo y pasá al siguiente paso.</div>
+        <br><button class="done-btn" onclick="markDone('002',3,5)">✓ Listo, siguiente paso</button>
+      </div>
+    </div>
+
+    <div class="step" id="m002-step-4">
+      <div class="step-header" onclick="toggleStep('002',4)">
+        <div class="step-num" id="m002-num-4">4</div>
+        <div class="step-label"><div class="step-title">La estructura más alta visible</div><div class="step-q">¿Qué edificio alto se ve desde la estación?</div></div>
+        <div class="step-chevron">▼</div>
+      </div>
+      <div class="step-body">
+        <div class="question-box">
+          Ahora buscá la estructura más alta que se ve en la fotografía:<br><br>
+          • Abrí Google Maps y buscá la estación que identificaste<br>
+          • Mirá qué estructuras altas (torres, rascacielos, monumentos) están visibles en la dirección de la foto<br>
+          • Buscá en Wikipedia el nombre de esa estructura y su altura oficial<br>
+          • Verificá que sea la más alta <em>visible desde la estación</em>, no la más alta de la ciudad
+        </div>
+        <button class="hint-btn" onclick="toggleHint('m002-h4')">💡 Ver pista</button>
+        <button class="answer-btn" onclick="toggleAnswer('m002-a4')">✓ Ver respuesta</button>
+        <div class="hint-box" id="m002-h4"><div class="hint-label">PISTA</div>Usá Google Maps en vista 3D o Street View para ver qué estructuras altas se ven desde los alrededores de la estación. La foto da una dirección de vista específica.</div>
+        <div class="answer-box" id="m002-a4"><div class="answer-label">RESPUESTA</div>✅ Identificá la estructura por nombre en Wikipedia o en su sitio oficial<br>✅ La altura debe estar en metros y verificada en fuente confiable<br><br>👉 Verificá contra la solución en <a href="https://gralhix.com/osint-exercise-002/" target="_blank" style="color:var(--cyan)">gralhix.com/osint-exercise-002/</a></div>
+        <br><button class="done-btn" onclick="markDone('002',4,5)">✓ Listo, siguiente paso</button>
+      </div>
+    </div>
+
+    <div class="step" id="m002-step-5">
+      <div class="step-header" onclick="toggleStep('002',5)">
+        <div class="step-num" id="m002-num-5">5</div>
+        <div class="step-label"><div class="step-title">Verificar y documentar</div><div class="step-q">¿Cómo sabés que tu respuesta es correcta?</div></div>
+        <div class="step-chevron">▼</div>
+      </div>
+      <div class="step-body">
+        <div class="question-box">
+          Antes de dar una respuesta como definitiva, un analista OSINT siempre verifica:<br><br>
+          • ¿Tenés al menos <strong>2 fuentes independientes</strong> que confirmen el nombre de la estación?<br>
+          • ¿La imagen satelital de Google Maps muestra la misma arquitectura?<br>
+          • ¿La altura de la estructura viene de una fuente oficial (Wikipedia, sitio web oficial)?<br>
+          • ¿Podés ver esa estructura desde la estación en Google Street View?
+        </div>
+        <button class="hint-btn" onclick="toggleHint('m002-h5')">💡 Ver pista</button>
+        <button class="answer-btn" onclick="toggleAnswer('m002-a5')">✓ Ver respuesta</button>
+        <div class="hint-box" id="m002-h5"><div class="hint-label">PISTA</div>En OSINT, una sola fuente nunca es suficiente. El principio de verificación cruzada (cross-referencing) es fundamental — siempre buscá al menos 2 fuentes independientes.</div>
+        <div class="answer-box" id="m002-a5"><div class="answer-label">RESPUESTA FINAL</div>✅ Consultá la solución completa y el proceso explicado paso a paso en:<br><br><a href="https://gralhix.com/osint-exercise-002/" target="_blank" style="color:var(--cyan); font-weight:600;">gralhix.com/osint-exercise-002/ ↗</a><br><br>🎉 ¡Misión completada!</div>
+        <br><button class="done-btn" onclick="markDone('002',5,5)">✓ ¡Completé el ejercicio!</button>
+      </div>
+    </div>
+
+    <div class="final-section" id="m002-final">
+      <div class="final-title">🎯 ¡Misión #002 Completada!</div>
+      <p class="final-desc">Aprendiste a usar <strong>búsqueda inversa de imágenes</strong> para identificar lugares y estructuras a partir de una sola fotografía. Una técnica esencial del kit OSINT.</p>
+      <a class="map-link" href="https://gralhix.com/osint-exercise-002/" target="_blank">📖 Ver solución oficial</a>
+      <div style="margin-top:1.5rem; background:var(--bg3); border-radius:8px; padding:1rem; text-align:left; max-width:480px; margin-left:auto; margin-right:auto;">
+        <div style="color:var(--cyan); font-size:0.8rem; font-weight:700; margin-bottom:0.5rem;">📖 LO QUE APRENDISTE</div>
+        <ul style="color:var(--muted); font-size:0.85rem; padding-left:1.2rem; line-height:1.8;">
+          <li><strong style="color:var(--white)">Búsqueda inversa:</strong> Google Lens, Yandex, TinEye</li>
+          <li><strong style="color:var(--white)">Verificación cruzada:</strong> mínimo 2 fuentes independientes</li>
+          <li><strong style="color:var(--white)">Street View</strong> como herramienta de verificación</li>
+          <li><strong style="color:var(--white)">Wikipedia</strong> para datos técnicos verificados</li>
+        </ul>
+      </div>
+    </div>
+  </div><!-- /mission-002 -->
+
+  <!-- ══ MISSION 004 ══ -->
+  <div id="mission-004" class="mission-view">
+    <button class="back-btn" onclick="backToSelector()">← Volver a misiones</button>
+
+    <div class="mission-header">
+      <div class="mission-badge">MISIÓN #004</div>
+      <div class="mission-text">
+        <h3>Resort en la isla</h3>
+        <p>Una fotografía muestra un resort ubicado en una isla. A partir de la imagen, determiná el nombre del resort, sus coordenadas geográficas y la dirección cardinal hacia la que apuntaba la cámara.</p>
+        <p class="objective">🎯 Objetivos: a) Nombre del resort &nbsp;|&nbsp; b) Coordenadas &nbsp;|&nbsp; c) Dirección de la cámara</p>
+      </div>
+    </div>
+
+    <div style="max-width:640px; margin: 0 auto 2rem; text-align:center;">
+      <p style="color:var(--muted); font-size:0.78rem; margin-bottom:0.6rem; font-family:'Geist Mono',monospace;">// imagen del ejercicio</p>
+      <img src="https://gralhix.com/wp-content/uploads/2023/08/osint-exercise-004-big-picture.jpg"
+           alt="Resort en isla"
+           style="width:100%; border-radius:10px; border:1px solid var(--border);" />
+      <div style="text-align:right; margin-top:0.4rem;">
+        <a href="https://gralhix.com/wp-content/uploads/2023/08/osint-exercise-004-big-picture.jpg" target="_blank" style="color:var(--cyan); font-size:0.78rem; text-decoration:none;">🔍 Ver foto completa ↗</a>
+      </div>
+    </div>
+
+    <p class="progress-label">Progreso: <span id="m004-progress-text">0 / 5 pasos</span></p>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="m004-progress-bar"></div></div>
+    <div class="steps-title">📋 Pasos para resolver el ejercicio</div>
+
+    <div class="step" id="m004-step-1">
+      <div class="step-header" onclick="toggleStep('004',1)">
+        <div class="step-num" id="m004-num-1">1</div>
+        <div class="step-label"><div class="step-title">Analizar la imagen</div><div class="step-q">¿Qué pistas dan el entorno y la arquitectura?</div></div>
+        <div class="step-chevron">▼</div>
+      </div>
+      <div class="step-body">
+        <div class="question-box">
+          Observá la foto detenidamente:<br><br>
+          • ¿Qué tipo de vegetación se ve? ¿palmeras, pinos, selva tropical?<br>
+          • ¿Cómo es el agua? ¿color, calma, tipo de mar u océano?<br>
+          • ¿Qué estilo tiene el resort? ¿lujo, bungalows, cabañas sobre el agua?<br>
+          • ¿Hay estructuras sobre el agua (pilotes)?<br>
+          • ¿El sol en la foto te da pistas sobre la hora y la orientación?
+        </div>
+        <button class="hint-btn" onclick="toggleHint('m004-h1')">💡 Ver pista</button>
+        <button class="answer-btn" onclick="toggleAnswer('m004-a1')">✓ Ver respuesta</button>
+        <div class="hint-box" id="m004-h1"><div class="hint-label">PISTA</div>Los bungalows sobre el agua son muy característicos de ciertas regiones. ¿Qué color tiene el agua? El azul turquesa claro suele indicar aguas tropicales poco profundas, típicas del Pacífico Sur o del Océano Índico.</div>
+        <div class="answer-box" id="m004-a1"><div class="answer-label">RESPUESTA</div>✅ <strong>Vegetación:</strong> palmeras tropicales → región tropical<br>✅ <strong>Agua:</strong> turquesa clara y calma → laguna tropical, posiblemente atolón<br>✅ <strong>Arquitectura:</strong> bungalows sobre el agua con techos de paja → estilo Maldivas/Polinesia<br>✅ <strong>Tipo de resort:</strong> resort de lujo con overwater bungalows<br><br>👉 Región probable: Maldivas, Polinesia Francesa o Pacífico Sur.</div>
+        <br><button class="done-btn" onclick="markDone('004',1,5)">✓ Listo, siguiente paso</button>
+      </div>
+    </div>
+
+    <div class="step" id="m004-step-2">
+      <div class="step-header" onclick="toggleStep('004',2)">
+        <div class="step-num" id="m004-num-2">2</div>
+        <div class="step-label"><div class="step-title">Búsqueda inversa de imagen</div><div class="step-q">¿Aparece esta foto en algún sitio web?</div></div>
+        <div class="step-chevron">▼</div>
+      </div>
+      <div class="step-body">
+        <div class="question-box">
+          Usá búsqueda inversa para encontrar el resort:<br><br>
+          • <strong>Google Lens:</strong> clic derecho sobre la imagen → "Buscar imagen con Google"<br>
+          • <strong>TinEye.com:</strong> encontrá la primera vez que esta foto apareció online<br>
+          • <strong>Yandex Images:</strong> a veces da mejores resultados para fotos de viajes<br><br>
+          También podés buscar en Google: <code>"overwater bungalows" resort isla [características]</code>
+        </div>
+        <button class="hint-btn" onclick="toggleHint('m004-h2')">💡 Ver pista</button>
+        <button class="answer-btn" onclick="toggleAnswer('m004-a2')">✓ Ver respuesta</button>
+        <div class="hint-box" id="m004-h2"><div class="hint-label">PISTA</div>Si Google Lens no da el resort directamente, buscá los elementos más únicos: ¿la forma de los bungalows? ¿el color del techo? ¿alguna estructura particular? Recortá solo esa parte y buscala.</div>
+        <div class="answer-box" id="m004-a2"><div class="answer-label">RESPUESTA</div>✅ La búsqueda inversa debería llevarte a sitios de viajes, reseñas, o el propio sitio web del resort<br>✅ Anotá el nombre que aparece en los resultados y verificalo en el siguiente paso</div>
+        <br><button class="done-btn" onclick="markDone('004',2,5)">✓ Listo, siguiente paso</button>
+      </div>
+    </div>
+
+    <div class="step" id="m004-step-3">
+      <div class="step-header" onclick="toggleStep('004',3)">
+        <div class="step-num" id="m004-num-3">3</div>
+        <div class="step-label"><div class="step-title">Confirmar el nombre del resort</div><div class="step-q">¿Cómo verificás que es el correcto?</div></div>
+        <div class="step-chevron">▼</div>
+      </div>
+      <div class="step-body">
+        <div class="question-box">
+          Tenés un nombre candidato. Ahora verificalo:<br><br>
+          • Buscá el resort en Google y mirá sus fotos oficiales<br>
+          • ¿La arquitectura coincide exactamente con la foto del ejercicio?<br>
+          • Buscá el resort en Google Maps → ¿existe en la ubicación que dice?<br>
+          • Verificá en sitios de reseñas (TripAdvisor, Booking) que las fotos coincidan
+        </div>
+        <button class="hint-btn" onclick="toggleHint('m004-h3')">💡 Ver pista</button>
+        <button class="answer-btn" onclick="toggleAnswer('m004-a3')">✓ Ver respuesta</button>
+        <div class="hint-box" id="m004-h3"><div class="hint-label">PISTA</div>El sitio web oficial del resort debería tener la misma foto o fotos muy similares desde el mismo ángulo. Si coincide, es el lugar correcto.</div>
+        <div class="answer-box" id="m004-a3"><div class="answer-label">RESPUESTA</div>✅ Confirmá el nombre comparando las fotos oficiales del resort con la imagen del ejercicio<br>✅ Verificá que el resort esté ubicado en una isla (en Google Maps debe verse rodeado de agua)<br><br>👉 ¿Tenés el nombre? ¡Anotalo! Pasá a encontrar las coordenadas.</div>
+        <br><button class="done-btn" onclick="markDone('004',3,5)">✓ Listo, siguiente paso</button>
+      </div>
+    </div>
+
+    <div class="step" id="m004-step-4">
+      <div class="step-header" onclick="toggleStep('004',4)">
+        <div class="step-num" id="m004-num-4">4</div>
+        <div class="step-label"><div class="step-title">Encontrar las coordenadas</div><div class="step-q">¿Dónde exactamente está la isla?</div></div>
+        <div class="step-chevron">▼</div>
+      </div>
+      <div class="step-body">
+        <div class="question-box">
+          Ahora que sabés el nombre del resort y la isla, conseguí las coordenadas:<br><br>
+          • Buscá el resort en Google Maps<br>
+          • Clic derecho sobre el resort → aparecen las coordenadas<br>
+          • Formato: <code>latitud, longitud</code><br>
+          • Verificá que sea una isla (rodeada de agua en vista satelital)
+        </div>
+        <button class="hint-btn" onclick="toggleHint('m004-h4')">💡 Ver pista</button>
+        <button class="answer-btn" onclick="toggleAnswer('m004-a4')">✓ Ver respuesta</button>
+        <div class="hint-box" id="m004-h4"><div class="hint-label">PISTA</div>En la vista satelital de Google Maps podés comparar los bungalows sobre el agua con los que ves en la foto. Los patrones y la disposición deberían coincidir.</div>
+        <div class="answer-box" id="m004-a4"><div class="answer-label">RESPUESTA</div>✅ Las coordenadas deben ser de la isla donde está el resort, no del aeropuerto más cercano<br>✅ Verificá contra la solución oficial en <a href="https://gralhix.com/osint-exercise-004/" target="_blank" style="color:var(--cyan)">gralhix.com/osint-exercise-004/</a></div>
+        <br><button class="done-btn" onclick="markDone('004',4,5)">✓ Listo, siguiente paso</button>
+      </div>
+    </div>
+
+    <div class="step" id="m004-step-5">
+      <div class="step-header" onclick="toggleStep('004',5)">
+        <div class="step-num" id="m004-num-5">5</div>
+        <div class="step-label"><div class="step-title">Dirección de la cámara</div><div class="step-q">¿Hacia qué punto cardinal apuntaba la cámara?</div></div>
+        <div class="step-chevron">▼</div>
+      </div>
+      <div class="step-body">
+        <div class="question-box">
+          Este es el paso más técnico. Para determinar la orientación de la cámara:<br><br>
+          • Abrí el resort en Google Maps con vista satelital<br>
+          • Observá la disposición de los bungalows y comparala con la foto<br>
+          • ¿Desde qué punto y en qué dirección tendría que estar el fotógrafo para sacar esa foto?<br>
+          • Las sombras en la foto también ayudan: sombras largas al este = foto tomada por la mañana desde el oeste<br><br>
+          <strong>Puntos cardinales:</strong> Norte (N), Sur (S), Este (E), Oeste (O)
+        </div>
+        <button class="hint-btn" onclick="toggleHint('m004-h5')">💡 Ver pista</button>
+        <button class="answer-btn" onclick="toggleAnswer('m004-a5')">✓ Ver respuesta</button>
+        <div class="hint-box" id="m004-h5"><div class="hint-label">PISTA</div>Activá la brújula en Google Maps (el ícono N en la esquina). Rotá la vista hasta que la disposición de los bungalows coincida con la foto. La dirección en la que mirás en ese momento es hacia donde apuntaba la cámara.</div>
+        <div class="answer-box" id="m004-a5"><div class="answer-label">RESPUESTA FINAL</div>✅ Verificá las 3 respuestas en la solución completa:<br><br><a href="https://gralhix.com/osint-exercise-004/" target="_blank" style="color:var(--cyan); font-weight:600;">gralhix.com/osint-exercise-004/ ↗</a><br><br>🎉 ¡Misión completada!</div>
+        <br><button class="done-btn" onclick="markDone('004',5,5)">✓ ¡Completé el ejercicio!</button>
+      </div>
+    </div>
+
+    <div class="final-section" id="m004-final">
+      <div class="final-title">🎯 ¡Misión #004 Completada!</div>
+      <p class="final-desc">Dominaste la geolocalización visual + determinación de orientación de cámara. Dos habilidades clave en investigaciones OSINT avanzadas.</p>
+      <a class="map-link" href="https://gralhix.com/osint-exercise-004/" target="_blank">📖 Ver solución oficial</a>
+      <div style="margin-top:1.5rem; background:var(--bg3); border-radius:8px; padding:1rem; text-align:left; max-width:480px; margin-left:auto; margin-right:auto;">
+        <div style="color:var(--cyan); font-size:0.8rem; font-weight:700; margin-bottom:0.5rem;">📖 LO QUE APRENDISTE</div>
+        <ul style="color:var(--muted); font-size:0.85rem; padding-left:1.2rem; line-height:1.8;">
+          <li><strong style="color:var(--white)">Análisis de vegetación y arquitectura</strong> para contextualizar geográficamente</li>
+          <li><strong style="color:var(--white)">Búsqueda inversa</strong> aplicada a fotos de viajes</li>
+          <li><strong style="color:var(--white)">Vista satelital</strong> para confirmar ubicaciones</li>
+          <li><strong style="color:var(--white)">Orientación de cámara</strong> usando sombras y mapas</li>
+        </ul>
+      </div>
+    </div>
+  </div><!-- /mission-004 -->
+
+  <!-- ══ MISSION 006 ══ -->
+  <div id="mission-006" class="mission-view">
+    <button class="back-btn" onclick="backToSelector()">← Volver a misiones</button>
+
+    <div class="mission-header" style="border-top-color: var(--red);">
+      <div class="mission-badge" style="border-color:var(--red); color:var(--red); background:#2d0a0a;">MISIÓN #006</div>
+      <div class="mission-text">
+        <h3>¿Desinformación?</h3>
+        <p>Un periodista con 140.000 seguidores publicó una foto el 19 de enero de 2023 afirmando que muestra un ataque suicida del TTP contra un puesto policial en Khyber, Pakistán, que mató a tres policías.</p>
+        <p class="objective">🎯 Objetivo: Verificar si la fotografía realmente muestra ese evento específico.</p>
+      </div>
+    </div>
+
+    <div style="max-width:500px; margin: 0 auto 2rem; text-align:center;">
+      <p style="color:var(--muted); font-size:0.78rem; margin-bottom:0.6rem; font-family:'Geist Mono',monospace;">// imagen a verificar</p>
+      <img src="https://gralhix.com/wp-content/uploads/2023/08/osintexercise006.webp"
+           alt="Imagen a verificar"
+           style="width:100%; border-radius:10px; border:1px solid var(--red); box-shadow: 0 0 12px rgba(248,81,73,0.2);" />
+      <div style="margin-top:0.6rem; background:#2d0a0a; border:1px solid var(--red); border-radius:6px; padding:0.6rem 1rem; font-size:0.82rem; color:#f85149;">
+        ⚠️ Claim: "TTP llevó a cabo un ataque suicida en un puesto policial en Khyber, Pakistán — 3 policías muertos" (19 ene 2023)
+      </div>
+    </div>
+
+    <p class="progress-label">Progreso: <span id="m006-progress-text">0 / 5 pasos</span></p>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="m006-progress-bar"></div></div>
+    <div class="steps-title">📋 Pasos para verificar la imagen</div>
+
+    <div class="step" id="m006-step-1">
+      <div class="step-header" onclick="toggleStep('006',1)">
+        <div class="step-num" id="m006-num-1">1</div>
+        <div class="step-label"><div class="step-title">Entender el claim</div><div class="step-q">¿Qué exactamente se está afirmando?</div></div>
+        <div class="step-chevron">▼</div>
+      </div>
+      <div class="step-body">
+        <div class="question-box">
+          Antes de verificar cualquier cosa, desglosá el claim en partes verificables:<br><br>
+          • <strong>¿Quién?</strong> — TTP (Tehrik-i-Taliban Pakistan)<br>
+          • <strong>¿Qué?</strong> — Ataque suicida contra puesto policial<br>
+          • <strong>¿Dónde?</strong> — Khyber, Pakistán<br>
+          • <strong>¿Cuándo?</strong> — 19 de enero de 2023<br>
+          • <strong>¿Resultado?</strong> — 3 policías muertos<br><br>
+          Tu tarea es verificar si la <em>foto específica</em> muestra este evento. No si el evento ocurrió.
+        </div>
+        <button class="hint-btn" onclick="toggleHint('m006-h1')">💡 Ver pista</button>
+        <button class="answer-btn" onclick="toggleAnswer('m006-a1')">✓ Ver respuesta</button>
+        <div class="hint-box" id="m006-h1"><div class="hint-label">PISTA</div>Un fact-checker siempre separa "¿ocurrió el evento?" de "¿esta foto muestra ese evento?". Una foto puede ser real pero estar usada fuera de contexto — eso también es desinformación.</div>
+        <div class="answer-box" id="m006-a1"><div class="answer-label">RESPUESTA</div>✅ El claim tiene <strong>5 elementos verificables</strong> (quién, qué, dónde, cuándo, resultado)<br>✅ Tu objetivo específico: verificar si la <strong>foto</strong> corresponde al evento del 19/01/2023 en Khyber<br>✅ Una foto real usada en el contexto equivocado = desinformación igualmente</div>
+        <br><button class="done-btn" onclick="markDone('006',1,5)">✓ Listo, siguiente paso</button>
+      </div>
+    </div>
+
+    <div class="step" id="m006-step-2">
+      <div class="step-header" onclick="toggleStep('006',2)">
+        <div class="step-num" id="m006-num-2">2</div>
+        <div class="step-label"><div class="step-title">Analizar la imagen</div><div class="step-q">¿Qué detalles hay en la foto?</div></div>
+        <div class="step-chevron">▼</div>
+      </div>
+      <div class="step-body">
+        <div class="question-box">
+          Antes de buscar, analizá la imagen con atención:<br><br>
+          • ¿Qué tipo de vehículo aparece destruido?<br>
+          • ¿Hay uniformes, insignias, números de matrícula visibles?<br>
+          • ¿Cómo es el entorno? ¿urbano, rural, montañoso?<br>
+          • ¿Hay texto en carteles o letreros?<br>
+          • ¿El tipo de vegetación o construcción da pistas geográficas?<br><br>
+          Anotá todo lo que puedas identificar — cada detalle puede ser una pista.
+        </div>
+        <button class="hint-btn" onclick="toggleHint('m006-h2')">💡 Ver pista</button>
+        <button class="answer-btn" onclick="toggleAnswer('m006-a2')">✓ Ver respuesta</button>
+        <div class="hint-box" id="m006-h2"><div class="hint-label">PISTA</div>Fijate en el tipo de vehículo — ¿es una camioneta policial, un auto civil, un vehículo militar? Los vehículos policiales de distintos países tienen colores y diseños muy diferentes. También observá el entorno: ¿coincide con Pakistán?</div>
+        <div class="answer-box" id="m006-a2"><div class="answer-label">RESPUESTA</div>✅ Identificá el tipo de vehículo y sus características visibles<br>✅ Describí el entorno con detalle<br>✅ Buscá cualquier texto o símbolo en la imagen<br><br>👉 Con esta descripción vas a poder hacer una búsqueda reversa más efectiva.</div>
+        <br><button class="done-btn" onclick="markDone('006',2,5)">✓ Listo, siguiente paso</button>
+      </div>
+    </div>
+
+    <div class="step" id="m006-step-3">
+      <div class="step-header" onclick="toggleStep('006',3)">
+        <div class="step-num" id="m006-num-3">3</div>
+        <div class="step-label"><div class="step-title">Búsqueda inversa de imagen</div><div class="step-q">¿Dónde apareció esta foto antes?</div></div>
+        <div class="step-chevron">▼</div>
+      </div>
+      <div class="step-body">
+        <div class="question-box">
+          Esta es la herramienta más poderosa para verificar imágenes:<br><br>
+          • <strong>Google Lens:</strong> clic derecho sobre la imagen → "Buscar imagen con Google"<br>
+          • <strong>TinEye.com:</strong> muestra la primera vez que la foto apareció en internet (crucial para verificar si es antigua)<br>
+          • <strong>Yandex Images:</strong> muy bueno para imágenes de conflictos y zonas de guerra<br><br>
+          Prestá atención a:<br>
+          • ¿Cuándo apareció por primera vez?<br>
+          • ¿En qué contexto la usaron originalmente?<br>
+          • ¿Coincide con la fecha del claim (19/01/2023)?
+        </div>
+        <button class="hint-btn" onclick="toggleHint('m006-h3')">💡 Ver pista</button>
+        <button class="answer-btn" onclick="toggleAnswer('m006-a3')">✓ Ver respuesta</button>
+        <div class="hint-box" id="m006-h3"><div class="hint-label">PISTA</div>Si TinEye encuentra la imagen con una fecha ANTERIOR al 19 de enero de 2023, ya tenés evidencia fuerte de que la foto no puede corresponder al evento reclamado. La primera aparición de una imagen es clave.</div>
+        <div class="answer-box" id="m006-a3"><div class="answer-label">RESPUESTA</div>✅ La búsqueda inversa es la técnica central del fact-checking visual<br>✅ Si la imagen aparece antes del evento, es <strong>desinformación por imagen reciclada</strong><br>✅ Anotá la fecha más antigua que encontrás y la fuente original</div>
+        <br><button class="done-btn" onclick="markDone('006',3,5)">✓ Listo, siguiente paso</button>
+      </div>
+    </div>
+
+    <div class="step" id="m006-step-4">
+      <div class="step-header" onclick="toggleStep('006',4)">
+        <div class="step-num" id="m006-num-4">4</div>
+        <div class="step-label"><div class="step-title">Verificar con fuentes de noticias</div><div class="step-q">¿Qué dicen los medios sobre el evento?</div></div>
+        <div class="step-chevron">▼</div>
+      </div>
+      <div class="step-body">
+        <div class="question-box">
+          Buscá cobertura periodística del evento original:<br><br>
+          • Buscá en Google: <code>"Khyber" "TTP" "January 2023" attack police</code><br>
+          • Mirá noticias de medios pakistaníes: Dawn, Geo News, The News International<br>
+          • ¿Esos artículos usan esta misma foto o fotos diferentes?<br>
+          • ¿Los artículos verificados mencionan el número de víctimas?<br><br>
+          Si el evento ocurrió pero las noticias usan otras fotos → la foto del tweet es falsa para ese contexto.
+        </div>
+        <button class="hint-btn" onclick="toggleHint('m006-h4')">💡 Ver pista</button>
+        <button class="answer-btn" onclick="toggleAnswer('m006-a4')">✓ Ver respuesta</button>
+        <div class="hint-box" id="m006-h4"><div class="hint-label">PISTA</div>Los medios pakistaníes serios (Dawn.com, Geo.tv) suelen cubrir ataques del TTP. Si el evento ocurrió, aparecerá en esas fuentes. Compará si las fotos que usan son las mismas o distintas.</div>
+        <div class="answer-box" id="m006-a4"><div class="answer-label">RESPUESTA</div>✅ La cobertura de medios verificados te dice si el evento ocurrió<br>✅ Si usan fotos diferentes, la foto del tweet puede ser reciclada de otro evento<br>✅ Esto es "desinformación por contexto falso" — uno de los tipos más comunes</div>
+        <br><button class="done-btn" onclick="markDone('006',4,5)">✓ Listo, siguiente paso</button>
+      </div>
+    </div>
+
+    <div class="step" id="m006-step-5">
+      <div class="step-header" onclick="toggleStep('006',5)">
+        <div class="step-num" id="m006-num-5">5</div>
+        <div class="step-label"><div class="step-title">Conclusión</div><div class="step-q">¿Es desinformación? ¿Cómo lo justificás?</div></div>
+        <div class="step-chevron">▼</div>
+      </div>
+      <div class="step-body">
+        <div class="question-box">
+          Con toda la evidencia recolectada, redactá tu conclusión como lo haría un fact-checker:<br><br>
+          • ¿La foto corresponde al evento del 19/01/2023 en Khyber? ¿Sí o no?<br>
+          • ¿Cuál es la evidencia que respalda tu conclusión?<br>
+          • Si es desinformación, ¿de qué tipo? (foto falsa, foto reciclada, contexto equivocado)<br>
+          • ¿Cuál es la fuente original de la imagen?<br><br>
+          Un buen fact-check siempre incluye: <strong>claim → evidencia → conclusión → fuentes</strong>
+        </div>
+        <button class="hint-btn" onclick="toggleHint('m006-h5')">💡 Ver pista</button>
+        <button class="answer-btn" onclick="toggleAnswer('m006-a5')">✓ Ver respuesta</button>
+        <div class="hint-box" id="m006-h5"><div class="hint-label">PISTA</div>Este ejercicio tiene una respuesta clara. La búsqueda inversa revela que la foto circuló en un contexto completamente diferente antes de enero 2023. La solución de Sofia Santos explica exactamente de dónde venía la imagen originalmente.</div>
+        <div class="answer-box" id="m006-a5"><div class="answer-label">RESPUESTA FINAL</div>✅ La respuesta completa y el proceso de verificación paso a paso en:<br><br><a href="https://gralhix.com/osint-exercise-006/" target="_blank" style="color:var(--cyan); font-weight:600;">gralhix.com/osint-exercise-006/ ↗</a><br><br>🎉 Aprendiste fact-checking visual — una habilidad crítica en la era de la desinformación.</div>
+        <br><button class="done-btn" onclick="markDone('006',5,5)">✓ ¡Completé el ejercicio!</button>
+      </div>
+    </div>
+
+    <div class="final-section" id="m006-final">
+      <div class="final-title">🎯 ¡Misión #006 Completada!</div>
+      <p class="final-desc">Aplicaste técnicas de <strong>fact-checking visual</strong> para detectar desinformación. En la era de las redes sociales, esta habilidad es más importante que nunca.</p>
+      <a class="map-link" href="https://gralhix.com/osint-exercise-006/" target="_blank">📖 Ver solución oficial</a>
+      <div style="margin-top:1.5rem; background:var(--bg3); border-radius:8px; padding:1rem; text-align:left; max-width:480px; margin-left:auto; margin-right:auto;">
+        <div style="color:var(--cyan); font-size:0.8rem; font-weight:700; margin-bottom:0.5rem;">📖 LO QUE APRENDISTE</div>
+        <ul style="color:var(--muted); font-size:0.85rem; padding-left:1.2rem; line-height:1.8;">
+          <li><strong style="color:var(--white)">Desglosar un claim</strong> en partes verificables</li>
+          <li><strong style="color:var(--white)">Búsqueda inversa</strong> para detectar imágenes recicladas</li>
+          <li><strong style="color:var(--white)">TinEye</strong> para encontrar la primera aparición de una imagen</li>
+          <li><strong style="color:var(--white)">Foto ≠ verdad:</strong> las imágenes pueden usarse fuera de contexto</li>
+          <li><strong style="color:var(--white)">Metodología:</strong> claim → evidencia → conclusión → fuentes</li>
+        </ul>
+      </div>
+    </div>
+  </div><!-- /mission-006 -->
+
+</div>
+
+<script>
+  // ── TABS ──
+  function switchTab(name, btn) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  // ── MISSION SELECTOR ──
+  function showMission(id) {
+    document.getElementById('mission-selector').style.display = 'none';
+    document.querySelectorAll('.mission-view').forEach(m => m.style.display = 'none');
+    const mv = document.getElementById('mission-' + id);
+    mv.style.display = 'block';
+    // open first step of that mission
+    const firstStep = mv.querySelector('.step');
+    if (firstStep && !firstStep.classList.contains('done')) {
+      firstStep.classList.add('open', 'active');
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function backToSelector() {
+    document.querySelectorAll('.mission-view').forEach(m => m.style.display = 'none');
+    document.getElementById('mission-selector').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── STEPS (generic, per-mission) ──
+  function toggleStep(missionId, n) {
+    const step = document.getElementById('m' + missionId + '-step-' + n);
+    if (!step) return;
+    step.classList.toggle('open');
+    if (step.classList.contains('open')) step.classList.add('active');
+  }
+
+  function toggleHint(id) {
+    const el = document.getElementById(id);
+    el.style.display = el.style.display === 'block' ? 'none' : 'block';
+  }
+
+  function toggleAnswer(id) {
+    const el = document.getElementById(id);
+    el.style.display = el.style.display === 'block' ? 'none' : 'block';
+  }
+
+  const missionState = { '001': new Set(), '002': new Set(), '004': new Set(), '006': new Set() };
+
+  function markDone(missionId, n, total) {
+    const state = missionState[missionId];
+    state.add(n);
+    const step = document.getElementById('m' + missionId + '-step-' + n);
+    step.classList.add('done');
+    step.classList.remove('active', 'open');
+    document.getElementById('m' + missionId + '-num-' + n).textContent = '✓';
+
+    const done = state.size;
+    document.getElementById('m' + missionId + '-progress-text').textContent = done + ' / ' + total + ' pasos';
+    document.getElementById('m' + missionId + '-progress-bar').style.width = (done / total * 100) + '%';
+
+    if (n < total) {
+      const next = document.getElementById('m' + missionId + '-step-' + (n + 1));
+      if (next) { next.classList.add('open', 'active'); next.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    }
+    if (done === total) {
+      const finalEl = document.getElementById('m' + missionId + '-final');
+      if (finalEl) { finalEl.classList.add('visible'); finalEl.scrollIntoView({ behavior: 'smooth' }); }
+    }
+  }
+
+  // init: mission views hidden, selector visible
+  document.querySelectorAll('.mission-view').forEach(m => m.style.display = 'none');
+  document.getElementById('mission-selector').style.display = 'block';
+
+  // ── MATRIX RAIN ──
+  (function () {
+    const canvas = document.getElementById('matrix-canvas');
+    const ctx = canvas.getContext('2d');
+    const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ<>/\\|{}[];:';
+    const fontSize = 14;
+    let cols, drops;
+
+    function resize() {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+      cols  = Math.floor(canvas.width / fontSize);
+      drops = Array(cols).fill(1);
+    }
+
+    function draw() {
+      ctx.fillStyle = 'rgba(13,17,23,0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.font = fontSize + 'px monospace';
+      for (let i = 0; i < drops.length; i++) {
+        const ch = chars[Math.floor(Math.random() * chars.length)];
+        const bright = Math.random() > 0.95;
+        ctx.fillStyle = bright ? '#a0ffa0' : '#3fb950';
+        ctx.fillText(ch, i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+        drops[i]++;
+      }
+    }
+
+    resize();
+    window.addEventListener('resize', resize);
+    setInterval(draw, 45);
+  })();
+</script>
+</body>
+</html>
