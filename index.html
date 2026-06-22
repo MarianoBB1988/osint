@@ -978,6 +978,19 @@
         </div>
       </div>
 
+      <div class="mcard" onclick="showMission('003')">
+        <img class="mcard-img" src="https://i0.wp.com/gralhix.com/wp-content/uploads/2023/08/osintexercise003.webp" alt="Misión 003"/>
+        <div class="mcard-body">
+          <div class="mcard-top">
+            <span class="mcard-num">#003</span>
+            <span class="diff-badge diff-med">Intermedio</span>
+          </div>
+          <div class="mcard-title">El apretón de manos</div>
+          <div class="mcard-desc">Dos presidentes se dan la mano en una visita diplomática. La agencia de noticias no reveló dónde. ¿Podés encontrarlo?</div>
+          <div class="mcard-tags"><span class="mtag">Personas</span><span class="mtag">Geolocalización</span><span class="mtag">Diplomacia</span></div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -1740,6 +1753,235 @@
     </div>
   </div><!-- /mission-006 -->
 
+  <!-- ══ MISSION 003 ══ -->
+  <div id="mission-003" class="mission-view">
+    <button class="back-btn" onclick="backToSelector()">← Volver a misiones</button>
+
+    <div class="mission-header">
+      <div class="mission-badge">MISIÓN #003</div>
+      <div class="mission-text">
+        <h3>El apretón de manos</h3>
+        <p>En abril de 2017, Mohamed Abdullahi Farmaajo, presidente de Somalia, visitó Turquía. Una agencia de noticias publicó una foto donde se lo ve dando la mano a Recep Tayyip Erdoğan. El artículo no reveló dónde fue tomada la foto.</p>
+        <p class="objective">🎯 Objetivos: a) Nombre del lugar visible en la foto &nbsp;|&nbsp; b) Coordenadas exactas del lugar</p>
+      </div>
+    </div>
+
+    <div style="max-width:640px; margin: 0 auto 2rem; text-align:center;">
+      <p style="color:var(--muted); font-size:0.78rem; margin-bottom:0.6rem; font-family:'Geist Mono',monospace;">// foto de la agencia de noticias</p>
+      <img src="https://gralhix.com/wp-content/uploads/2023/08/osint-exercise-003-picture.jpg"
+           alt="Farmaajo y Erdoğan dándose la mano"
+           style="width:100%; border-radius:10px; border:1px solid var(--border);" />
+      <div style="text-align:right; margin-top:0.4rem;">
+        <a href="https://gralhix.com/wp-content/uploads/2023/08/osint-exercise-003-picture.jpg" target="_blank" style="color:var(--cyan); font-size:0.78rem; text-decoration:none;">🔍 Ver foto completa ↗</a>
+      </div>
+    </div>
+
+    <p class="progress-label">Progreso: <span id="m003-progress-text">0 / 5 pasos</span></p>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="m003-progress-bar"></div></div>
+    <div class="steps-title">📋 Pasos para resolver el ejercicio</div>
+
+    <!-- STEP 1 -->
+    <div class="step" id="m003-step-1">
+      <div class="step-header" onclick="toggleStep('003',1)">
+        <div class="step-num" id="m003-num-1">1</div>
+        <div class="step-label">
+          <div class="step-title">Identificar a las personas</div>
+          <div class="step-q">¿Quiénes son y qué nos dice eso sobre el lugar?</div>
+        </div>
+        <div class="step-chevron">▼</div>
+      </div>
+      <div class="step-body">
+        <div class="question-box">
+          Antes de mirar el fondo, identificá a las personas en la foto:<br><br>
+          • ¿Reconocés a alguno de los dos?<br>
+          • Si no los reconocés: buscá en Google "presidents handshake april 2017" o hacé búsqueda inversa de la foto<br>
+          • ¿Qué banderas o símbolos se ven?<br>
+          • ¿Qué nos dice la identidad de las personas sobre el <strong>país donde fue tomada</strong> la foto?
+        </div>
+        <button class="hint-btn" onclick="toggleHint('m003-h1')">💡 Ver pista</button>
+        <button class="answer-btn" onclick="toggleAnswer('m003-a1')">✓ Ver respuesta</button>
+        <div class="hint-box" id="m003-h1">
+          <div class="hint-label">PISTA</div>
+          Una visita de estado siempre ocurre en el país del anfitrión. Si Farmaajo (Somalia) visitó a Erdoğan (Turquía), ¿en qué país estamos buscando? Fijate también en las banderas del fondo.
+        </div>
+        <div class="answer-box" id="m003-a1">
+          <div class="answer-label">RESPUESTA</div>
+          ✅ <strong>Mohamed Abdullahi Farmaajo</strong> — presidente de Somalia (2017-2022)<br>
+          ✅ <strong>Recep Tayyip Erdoğan</strong> — presidente de Turquía<br>
+          ✅ Farmaajo visitó Turquía → la foto fue tomada <strong>en Turquía</strong><br>
+          ✅ Las banderas del fondo confirman el contexto oficial turco<br><br>
+          👉 Ya sabemos el país. Ahora hay que identificar el edificio específico.
+        </div>
+        <br><button class="done-btn" onclick="markDone('003',1,5)">✓ Listo, siguiente paso</button>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step" id="m003-step-2">
+      <div class="step-header" onclick="toggleStep('003',2)">
+        <div class="step-num" id="m003-num-2">2</div>
+        <div class="step-label">
+          <div class="step-title">Analizar el fondo de la foto</div>
+          <div class="step-q">¿Qué arquitectura y decoración se ven en la sala?</div>
+        </div>
+        <div class="step-chevron">▼</div>
+      </div>
+      <div class="step-body">
+        <div class="question-box">
+          Ahora enfocate en el <strong>fondo de la imagen</strong>, no en las personas:<br><br>
+          • ¿Qué tipo de sala es? ¿Un salón oficial, una sala de reuniones, un palacio?<br>
+          • ¿Qué materiales se ven? ¿Mármol, madera, alfombras?<br>
+          • ¿Hay elementos decorativos distintivos? (candelabros, arcos, relieves)<br>
+          • ¿El estilo es moderno o clásico? ¿Parece un edificio nuevo o histórico?<br>
+          • ¿Hay banderas identificables?
+        </div>
+        <button class="hint-btn" onclick="toggleHint('m003-h2')">💡 Ver pista</button>
+        <button class="answer-btn" onclick="toggleAnswer('m003-a2')">✓ Ver respuesta</button>
+        <div class="hint-box" id="m003-h2">
+          <div class="hint-label">PISTA</div>
+          La sala tiene una decoración muy elaborada y formal. Parece un salón de recepción de un palacio presidencial o gubernamental. El estilo moderno con elementos neoclásicos es característico de un edificio oficial importante de Turquía construido recientemente.
+        </div>
+        <div class="answer-box" id="m003-a2">
+          <div class="answer-label">RESPUESTA</div>
+          ✅ <strong>Tipo de sala:</strong> salón de recepciones oficial / sala de protocolo<br>
+          ✅ <strong>Estilo:</strong> neoclásico moderno, ornamental, muy formal<br>
+          ✅ <strong>Materiales:</strong> mármol, alfombras de lujo, iluminación elaborada<br>
+          ✅ <strong>Contexto:</strong> claramente un palacio presidencial de construcción reciente<br><br>
+          👉 Turquía tiene un nuevo complejo presidencial inaugurado en 2014. ¿Podría ser ese?
+        </div>
+        <br><button class="done-btn" onclick="markDone('003',2,5)">✓ Listo, siguiente paso</button>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step" id="m003-step-3">
+      <div class="step-header" onclick="toggleStep('003',3)">
+        <div class="step-num" id="m003-num-3">3</div>
+        <div class="step-label">
+          <div class="step-title">Buscar la visita diplomática</div>
+          <div class="step-q">¿Qué dicen las noticias de abril 2017?</div>
+        </div>
+        <div class="step-chevron">▼</div>
+      </div>
+      <div class="step-body">
+        <div class="question-box">
+          Buscá cobertura periodística de la visita usando los datos que ya tenés:<br><br>
+          • Buscá en Google: <code>"Farmaajo" "Erdoğan" "2017"</code><br>
+          • O en inglés: <code>Farmaajo Turkey visit April 2017</code><br>
+          • ¿Qué edificio mencionan los artículos como lugar de la reunión?<br>
+          • ¿Las fotos de los artículos muestran la misma sala?<br><br>
+          También podés hacer <strong>búsqueda inversa</strong> de la foto del ejercicio para encontrar artículos que la usaron.
+        </div>
+        <button class="hint-btn" onclick="toggleHint('m003-h3')">💡 Ver pista</button>
+        <button class="answer-btn" onclick="toggleAnswer('m003-a3')">✓ Ver respuesta</button>
+        <div class="hint-box" id="m003-h3">
+          <div class="hint-label">PISTA</div>
+          Las reuniones presidenciales en Turquía desde 2014 se realizan principalmente en el <em>Cumhurbaşkanlığı Külliyesi</em> (Complejo Presidencial), también conocido como "Ak Saray" (Palacio Blanco) o Beştepe Palace, ubicado en Ankara.
+        </div>
+        <div class="answer-box" id="m003-a3">
+          <div class="answer-label">RESPUESTA</div>
+          ✅ Los artículos de noticias mencionan la reunión en el <strong>Complejo Presidencial de Turquía</strong> en Ankara<br>
+          ✅ Nombre oficial: <strong>Cumhurbaşkanlığı Külliyesi</strong> (Beştepe Presidential Complex)<br>
+          ✅ Inaugurado en 2014, es uno de los edificios gubernamentales más grandes del mundo<br>
+          ✅ La sala de recepciones coincide con el estilo moderno-ornamental de la foto<br><br>
+          👉 Ya tenemos el nombre del lugar. Ahora buscamos las coordenadas exactas.
+        </div>
+        <br><button class="done-btn" onclick="markDone('003',3,5)">✓ Listo, siguiente paso</button>
+      </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step" id="m003-step-4">
+      <div class="step-header" onclick="toggleStep('003',4)">
+        <div class="step-num" id="m003-num-4">4</div>
+        <div class="step-label">
+          <div class="step-title">Verificar con imágenes del edificio</div>
+          <div class="step-q">¿La sala de la foto coincide con el interior del palacio?</div>
+        </div>
+        <div class="step-chevron">▼</div>
+      </div>
+      <div class="step-body">
+        <div class="question-box">
+          Antes de dar las coordenadas, verificá que el edificio sea correcto:<br><br>
+          • Buscá en Google Images: <code>Cumhurbaşkanlığı Külliyesi interior sala</code><br>
+          • O en inglés: <code>Beştepe Presidential Palace interior hall</code><br>
+          • ¿Las fotos del interior del palacio muestran una sala similar?<br>
+          • ¿Coinciden los elementos decorativos, los colores, la iluminación?<br><br>
+          Este paso es crucial — en OSINT siempre hay que <strong>verificar antes de concluir</strong>.
+        </div>
+        <button class="hint-btn" onclick="toggleHint('m003-h4')">💡 Ver pista</button>
+        <button class="answer-btn" onclick="toggleAnswer('m003-a4')">✓ Ver respuesta</button>
+        <div class="hint-box" id="m003-h4">
+          <div class="hint-label">PISTA</div>
+          El complejo presidencial tiene varias salas de recepción. Buscá específicamente fotos de reuniones bilaterales o "bilateral meeting room" del palacio — son las salas donde se reciben mandatarios extranjeros y suelen tener el mismo estilo de la foto.
+        </div>
+        <div class="answer-box" id="m003-a4">
+          <div class="answer-label">RESPUESTA</div>
+          ✅ Las fotos del interior del Complejo Presidencial turco muestran <strong>salas idénticas</strong> a la de la foto<br>
+          ✅ Mismo estilo neoclásico moderno, misma alfombra, misma iluminación de techo<br>
+          ✅ El complejo tiene salas específicas para reuniones bilaterales — exactamente el tipo de foto<br><br>
+          👉 Confirmado. Ahora obtenemos las coordenadas en Google Maps.
+        </div>
+        <br><button class="done-btn" onclick="markDone('003',4,5)">✓ Listo, siguiente paso</button>
+      </div>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="step" id="m003-step-5">
+      <div class="step-header" onclick="toggleStep('003',5)">
+        <div class="step-num" id="m003-num-5">5</div>
+        <div class="step-label">
+          <div class="step-title">Extraer las coordenadas</div>
+          <div class="step-q">¿Cuáles son las coordenadas exactas del Complejo Presidencial?</div>
+        </div>
+        <div class="step-chevron">▼</div>
+      </div>
+      <div class="step-body">
+        <div class="question-box">
+          Último paso: obtener las coordenadas precisas:<br><br>
+          • Buscá <code>Cumhurbaşkanlığı Külliyesi</code> en Google Maps (o "Beştepe Presidential Complex Ankara")<br>
+          • El edificio es enorme y fácil de identificar en vista satelital<br>
+          • Clic derecho sobre el edificio principal → copiar coordenadas<br>
+          • Verificá que sea el complejo correcto comparando la forma del edificio desde satélite<br><br>
+          <strong>El complejo está en Ankara</strong>, no en Estambul — muchos cometen ese error.
+        </div>
+        <button class="hint-btn" onclick="toggleHint('m003-h5')">💡 Ver pista</button>
+        <button class="answer-btn" onclick="toggleAnswer('m003-a5')">✓ Ver respuesta</button>
+        <div class="hint-box" id="m003-h5">
+          <div class="hint-label">PISTA</div>
+          El complejo está al oeste de Ankara, en el barrio de Beştepe. En vista satelital es inconfundible: un edificio blanco enorme con forma irregular y jardines. Coordenadas aproximadas: 39.93°N, 32.79°E.
+        </div>
+        <div class="answer-box" id="m003-a5">
+          <div class="answer-label">RESPUESTA FINAL</div>
+          ✅ <strong>Lugar:</strong> Cumhurbaşkanlığı Külliyesi (Beştepe Presidential Complex)<br>
+          ✅ <strong>Ciudad:</strong> Ankara, Turquía 🇹🇷<br>
+          ✅ <strong>Coordenadas:</strong> <code>39.9313° N, 32.7982° E</code><br><br>
+          Verificá el proceso completo de Sofia Santos en:<br>
+          <a href="https://gralhix.com/list-of-osint-exercises/osint-exercise-003/" target="_blank" style="color:var(--cyan); font-weight:600;">gralhix.com — OSINT Exercise #003 ↗</a><br><br>
+          🎉 ¡Identificaste un lugar diplomático secreto usando solo una foto pública!
+        </div>
+        <br><button class="done-btn" onclick="markDone('003',5,5)">✓ ¡Completé el ejercicio!</button>
+      </div>
+    </div>
+
+    <div class="final-section" id="m003-final">
+      <div class="final-title">🎯 ¡Misión #003 Completada!</div>
+      <p style="color:var(--muted); font-size:0.9rem; margin-bottom:0.5rem;">Ubicación identificada:</p>
+      <div class="coords"><span>39.9313° N</span> · <span>32.7982° E</span></div>
+      <p class="final-desc">Usando el <strong>contexto de personas públicas</strong>, cobertura periodística y verificación visual encontraste una ubicación que no estaba en el artículo original. Eso es inteligencia de fuentes abiertas aplicada a diplomacia.</p>
+      <a class="map-link" href="https://www.google.com/maps/place/39.9313,32.7982" target="_blank">🗺️ Ver en Google Maps</a>
+      <div style="margin-top:1.5rem; background:var(--bg3); border-radius:8px; padding:1rem; text-align:left; max-width:480px; margin-left:auto; margin-right:auto;">
+        <div style="color:var(--cyan); font-size:0.8rem; font-weight:700; margin-bottom:0.5rem;">📖 LO QUE APRENDISTE</div>
+        <ul style="color:var(--muted); font-size:0.85rem; padding-left:1.2rem; line-height:1.8;">
+          <li><strong style="color:var(--white)">Personas como pivote:</strong> la identidad de alguien te da contexto geográfico</li>
+          <li><strong style="color:var(--white)">Búsqueda periodística:</strong> las noticias son fuentes OSINT de primer nivel</li>
+          <li><strong style="color:var(--white)">Verificación visual:</strong> comparar fondos e interiores de edificios</li>
+          <li><strong style="color:var(--white)">Contexto diplomático:</strong> visitas de estado ocurren en lugares predecibles</li>
+        </ul>
+      </div>
+    </div>
+  </div><!-- /mission-003 -->
+
 </div>
 
 <script>
@@ -1789,7 +2031,7 @@
     el.style.display = el.style.display === 'block' ? 'none' : 'block';
   }
 
-  const missionState = { '001': new Set(), '002': new Set(), '004': new Set(), '006': new Set() };
+  const missionState = { '001': new Set(), '002': new Set(), '003': new Set(), '004': new Set(), '006': new Set() };
 
   function markDone(missionId, n, total) {
     const state = missionState[missionId];
