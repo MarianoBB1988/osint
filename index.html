@@ -657,6 +657,21 @@
       transform: translateY(-3px);
       box-shadow: 0 8px 24px rgba(0,0,0,0.4);
     }
+    .mcard { position: relative; }
+    .new-badge {
+      position: absolute;
+      top: 10px; left: 10px;
+      background: #e65c00;
+      color: #fff;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      z-index: 2;
+      text-transform: uppercase;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    }
     .mcard-img {
       width: 100%;
       height: 160px;
@@ -979,6 +994,7 @@
       </div>
 
       <div class="mcard" onclick="showMission('003')">
+        <span class="new-badge">NUEVO</span>
         <img class="mcard-img" src="https://i0.wp.com/gralhix.com/wp-content/uploads/2023/08/osintexercise003.webp" alt="Misión 003"/>
         <div class="mcard-body">
           <div class="mcard-top">
@@ -988,6 +1004,20 @@
           <div class="mcard-title">El apretón de manos</div>
           <div class="mcard-desc">Dos presidentes se dan la mano en una visita diplomática. La agencia de noticias no reveló dónde. ¿Podés encontrarlo?</div>
           <div class="mcard-tags"><span class="mtag">Personas</span><span class="mtag">Geolocalización</span><span class="mtag">Diplomacia</span></div>
+        </div>
+      </div>
+
+      <div class="mcard" onclick="showMission('011')">
+        <span class="new-badge">NUEVO</span>
+        <img class="mcard-img" src="https://i0.wp.com/gralhix.com/wp-content/uploads/2023/08/osintexercise011.webp" alt="Misión 011"/>
+        <div class="mcard-body">
+          <div class="mcard-top">
+            <span class="mcard-num">#011</span>
+            <span class="diff-badge diff-hard">Difícil</span>
+          </div>
+          <div class="mcard-title">¿Quiénes son?</div>
+          <div class="mcard-desc">Una foto muestra a cuatro personas. Tu misión: identificarlas a todas usando solo fuentes abiertas.</div>
+          <div class="mcard-tags"><span class="mtag">Personas</span><span class="mtag">Reconocimiento</span><span class="mtag">Imagen inversa</span></div>
         </div>
       </div>
 
@@ -1982,6 +2012,234 @@
     </div>
   </div><!-- /mission-003 -->
 
+  <!-- ══ MISSION 011 ══ -->
+  <div id="mission-011" class="mission-view">
+    <button class="back-btn" onclick="backToSelector()">← Volver a misiones</button>
+
+    <div class="mission-header">
+      <div class="mission-badge" style="border-color:var(--red);color:var(--red);background:#2d0a0a;">MISIÓN #011</div>
+      <div class="mission-text">
+        <h3>¿Quiénes son?</h3>
+        <p>La foto muestra a cuatro personas. No hay contexto, no hay nombres, no hay fecha visible. Tu única herramienta: la imagen y las fuentes abiertas de internet.</p>
+        <p class="objective">🎯 Objetivo: Identificar el nombre completo de las cuatro personas que aparecen en la fotografía.</p>
+      </div>
+    </div>
+
+    <div style="max-width:640px; margin: 0 auto 2rem; text-align:center;">
+      <p style="color:var(--muted); font-size:0.78rem; margin-bottom:0.6rem; font-family:'Geist Mono',monospace;">// foto del ejercicio — cuatro personas a identificar</p>
+      <img src="https://gralhix.com/wp-content/uploads/2023/08/osint-exercise-011-big-picture.png"
+           alt="Cuatro personas a identificar"
+           style="width:100%; border-radius:10px; border:1px solid var(--border);" />
+      <div style="text-align:right; margin-top:0.4rem;">
+        <a href="https://gralhix.com/wp-content/uploads/2023/08/osint-exercise-011-big-picture.png" target="_blank" style="color:var(--cyan); font-size:0.78rem; text-decoration:none;">🔍 Ver foto completa ↗</a>
+      </div>
+    </div>
+
+    <div style="background:#2d1f00; border:1px solid var(--yellow); border-radius:8px; padding:0.8rem 1rem; margin-bottom:1.5rem; font-size:0.85rem; color:var(--text);">
+      ⚠️ <strong style="color:var(--yellow)">Nivel: Difícil</strong> — Este ejercicio no tiene atajos. Requiere paciencia, búsqueda inversa y cruzar múltiples fuentes. Es normal que lleve más tiempo que los anteriores.
+    </div>
+
+    <p class="progress-label">Progreso: <span id="m011-progress-text">0 / 5 pasos</span></p>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="m011-progress-bar"></div></div>
+    <div class="steps-title">📋 Pasos para resolver el ejercicio</div>
+
+    <!-- STEP 1 -->
+    <div class="step" id="m011-step-1">
+      <div class="step-header" onclick="toggleStep('011',1)">
+        <div class="step-num" id="m011-num-1">1</div>
+        <div class="step-label">
+          <div class="step-title">Analizar la foto en detalle</div>
+          <div class="step-q">¿Qué pistas hay sobre el contexto, lugar y época?</div>
+        </div>
+        <div class="step-chevron">▼</div>
+      </div>
+      <div class="step-body">
+        <div class="question-box">
+          Antes de buscar a las personas, extraé todo el contexto posible de la imagen:<br><br>
+          • ¿Dónde parece estar tomada? ¿Interior, exterior, evento oficial?<br>
+          • ¿Qué ropa llevan? ¿Uniforme, traje, ropa casual? ¿De qué época?<br>
+          • ¿Hay logos, banderas, carteles, insignias o elementos identificables en el fondo?<br>
+          • ¿Hay objetos que ayuden a fechar la foto? (tecnología, moda, vehículos)<br>
+          • ¿Las personas parecen de alguna nacionalidad o región particular?<br><br>
+          Anotá todo. Cada detalle puede ser la clave.
+        </div>
+        <button class="hint-btn" onclick="toggleHint('m011-h1')">💡 Ver pista</button>
+        <button class="answer-btn" onclick="toggleAnswer('m011-a1')">✓ Ver respuesta</button>
+        <div class="hint-box" id="m011-h1">
+          <div class="hint-label">PISTA</div>
+          Prestá especial atención a cualquier elemento de fondo: logos, insignias en ropa, carteles parcialmente visibles. A veces un detalle pequeño — como una insignia en una solapa — es suficiente para identificar a alguien por su cargo u organización.
+        </div>
+        <div class="answer-box" id="m011-a1">
+          <div class="answer-label">RESPUESTA</div>
+          ✅ Analizá sistemáticamente: ropa → contexto → fondo → rasgos físicos → posible nacionalidad<br>
+          ✅ El contexto de la foto (oficial, informal, profesional) ya te dice en qué tipo de fuentes buscar<br>
+          ✅ Si hay algún texto o logo visible aunque sea parcialmente, es tu primera pista concreta<br><br>
+          👉 Con el contexto claro, ahora viene la herramienta más poderosa: búsqueda inversa.
+        </div>
+        <br><button class="done-btn" onclick="markDone('011',1,5)">✓ Listo, siguiente paso</button>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step" id="m011-step-2">
+      <div class="step-header" onclick="toggleStep('011',2)">
+        <div class="step-num" id="m011-num-2">2</div>
+        <div class="step-label">
+          <div class="step-title">Búsqueda inversa de la foto completa</div>
+          <div class="step-q">¿Apareció esta foto antes en internet?</div>
+        </div>
+        <div class="step-chevron">▼</div>
+      </div>
+      <div class="step-body">
+        <div class="question-box">
+          Empezá con la imagen completa en todas las herramientas disponibles:<br><br>
+          • <strong>Google Lens:</strong> clic derecho → "Buscar imagen con Google" — busca visualmente<br>
+          • <strong>Yandex Images:</strong> yandex.com/images → ícono cámara → pegar URL — el mejor para rostros<br>
+          • <strong>TinEye.com:</strong> encuentra la primera aparición de la imagen en internet<br>
+          • <strong>Bing Visual Search:</strong> a veces da resultados distintos a Google<br><br>
+          Si la foto completa no da resultados, en el siguiente paso recortamos cada cara por separado.
+        </div>
+        <button class="hint-btn" onclick="toggleHint('m011-h2')">💡 Ver pista</button>
+        <button class="answer-btn" onclick="toggleAnswer('m011-a2')">✓ Ver respuesta</button>
+        <div class="hint-box" id="m011-h2">
+          <div class="hint-label">PISTA</div>
+          <strong>Yandex Images</strong> tiene el mejor reconocimiento facial de todos los motores de búsqueda — especialmente para personas que no son famosas en el mundo anglosajón. Si Google no da resultado, Yandex suele sorprender.
+        </div>
+        <div class="answer-box" id="m011-a2">
+          <div class="answer-label">RESPUESTA</div>
+          ✅ Probá los 4 motores — cada uno indexa imágenes distintas<br>
+          ✅ Si la foto original no da resultado, guardala y recortá la sección con mejor resolución<br>
+          ✅ TinEye es ideal para ver si la foto circuló en algún artículo o perfil con nombres<br><br>
+          👉 Si la foto completa no da resultado, pasamos a buscar cada cara individualmente.
+        </div>
+        <br><button class="done-btn" onclick="markDone('011',2,5)">✓ Listo, siguiente paso</button>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step" id="m011-step-3">
+      <div class="step-header" onclick="toggleStep('011',3)">
+        <div class="step-num" id="m011-num-3">3</div>
+        <div class="step-label">
+          <div class="step-title">Búsqueda por rostro individual</div>
+          <div class="step-q">¿Podés identificar a cada persona por separado?</div>
+        </div>
+        <div class="step-chevron">▼</div>
+      </div>
+      <div class="step-body">
+        <div class="question-box">
+          Si la foto grupal no da resultados, buscá cada rostro por separado:<br><br>
+          • Recortá cada cara de la foto (screenshot o herramienta de recorte)<br>
+          • Buscá cada recorte en <strong>Yandex Images</strong> individualmente<br>
+          • Probá también <strong>Google Lens</strong> sobre cada cara<br>
+          • Si encontrás a una persona, el contexto de quién es puede ayudarte a identificar a las demás<br><br>
+          <strong>Estrategia:</strong> identificá primero a la persona más reconocible (la más prominente en la foto) y usá eso como pivot para las demás.
+        </div>
+        <button class="hint-btn" onclick="toggleHint('m011-h3')">💡 Ver pista</button>
+        <button class="answer-btn" onclick="toggleAnswer('m011-a3')">✓ Ver respuesta</button>
+        <div class="hint-box" id="m011-h3">
+          <div class="hint-label">PISTA</div>
+          Una vez que identificás a una persona, buscá su nombre + "foto grupal" o mirá su historial público de eventos. Si es una figura pública, es probable que las otras personas que aparecen con ella también lo sean o estén en el mismo círculo profesional.
+        </div>
+        <div class="answer-box" id="m011-a3">
+          <div class="answer-label">RESPUESTA</div>
+          ✅ La técnica de <strong>pivoting desde una persona</strong> es clave en investigaciones con múltiples sujetos<br>
+          ✅ Una persona identificada → su red de contactos → las demás<br>
+          ✅ Buscá: "[nombre encontrado] + evento + año" para encontrar fotos del mismo momento<br><br>
+          👉 ¿Identificaste al menos una persona? Usá eso para cercar a las demás.
+        </div>
+        <br><button class="done-btn" onclick="markDone('011',3,5)">✓ Listo, siguiente paso</button>
+      </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step" id="m011-step-4">
+      <div class="step-header" onclick="toggleStep('011',4)">
+        <div class="step-num" id="m011-num-4">4</div>
+        <div class="step-label">
+          <div class="step-title">Investigar el contexto del evento</div>
+          <div class="step-q">¿Dónde y cuándo se juntaron estas cuatro personas?</div>
+        </div>
+        <div class="step-chevron">▼</div>
+      </div>
+      <div class="step-body">
+        <div class="question-box">
+          Con al menos una persona identificada, investigá el evento o contexto:<br><br>
+          • Buscá la agenda pública, apariciones o eventos de esa persona en la época de la foto<br>
+          • ¿En qué tipo de eventos suele aparecer? ¿Conferencias, actos políticos, deportivos?<br>
+          • Revisá sus redes sociales (LinkedIn, Twitter/X, Instagram) buscando fotos grupales similares<br>
+          • Buscá artículos de prensa con su nombre + las otras caras que reconocés parcialmente<br><br>
+          El contexto del evento suele llevar a los nombres de los otros participantes.
+        </div>
+        <button class="hint-btn" onclick="toggleHint('m011-h4')">💡 Ver pista</button>
+        <button class="answer-btn" onclick="toggleAnswer('m011-a4')">✓ Ver respuesta</button>
+        <div class="hint-box" id="m011-h4">
+          <div class="hint-label">PISTA</div>
+          Si la foto es de un evento con múltiples personas, buscá cobertura fotográfica de ese evento en medios. Los fotógrafos de prensa suelen etiquetar a las personas en sus galerías, lo que puede darte todos los nombres de una vez.
+        </div>
+        <div class="answer-box" id="m011-a4">
+          <div class="answer-label">RESPUESTA</div>
+          ✅ Las redes sociales de personas públicas son fuente OSINT de primer nivel<br>
+          ✅ Galerías fotográficas de prensa a menudo tienen pie de foto con nombres<br>
+          ✅ LinkedIn es muy útil para identificar profesionales en contextos laborales<br><br>
+          👉 ¿Tenés ya 3 de 4? El último se identifica por eliminación y cruce de contexto.
+        </div>
+        <br><button class="done-btn" onclick="markDone('011',4,5)">✓ Listo, siguiente paso</button>
+      </div>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="step" id="m011-step-5">
+      <div class="step-header" onclick="toggleStep('011',5)">
+        <div class="step-num" id="m011-num-5">5</div>
+        <div class="step-label">
+          <div class="step-title">Verificar y documentar las 4 identidades</div>
+          <div class="step-q">¿Podés confirmar cada nombre con al menos 2 fuentes?</div>
+        </div>
+        <div class="step-chevron">▼</div>
+      </div>
+      <div class="step-body">
+        <div class="question-box">
+          Antes de dar las respuestas como definitivas, verificá cada identidad:<br><br>
+          • ¿Tenés al menos <strong>2 fuentes independientes</strong> para cada persona?<br>
+          • ¿La foto de perfil/oficial de cada persona coincide con el rostro en la imagen?<br>
+          • ¿El contexto del evento tiene sentido con que esas 4 personas estuvieran juntas?<br>
+          • ¿La cronología es coherente? (¿estaban todas disponibles en esa fecha?)<br><br>
+          Documentá: Nombre completo / Fuente 1 / Fuente 2 para cada persona.
+        </div>
+        <button class="hint-btn" onclick="toggleHint('m011-h5')">💡 Ver pista</button>
+        <button class="answer-btn" onclick="toggleAnswer('m011-a5')">✓ Ver respuesta</button>
+        <div class="hint-box" id="m011-h5">
+          <div class="hint-label">PISTA</div>
+          Si te trabás en la última persona, revisá la solución de la comunidad en gralhix.com — Sofia Santos publica soluciones detalladas y hay aportes de otros investigadores OSINT con metodologías distintas.
+        </div>
+        <div class="answer-box" id="m011-a5">
+          <div class="answer-label">RESPUESTA FINAL</div>
+          ✅ Verificá tus 4 identidades contra la solución oficial:<br><br>
+          <a href="https://gralhix.com/list-of-osint-exercises/osint-exercise-011/" target="_blank" style="color:var(--cyan); font-weight:600;">gralhix.com — OSINT Exercise #011 ↗</a><br><br>
+          🎉 ¡Completaste el ejercicio más difícil del laboratorio!
+        </div>
+        <br><button class="done-btn" onclick="markDone('011',5,5)">✓ ¡Completé el ejercicio!</button>
+      </div>
+    </div>
+
+    <div class="final-section" id="m011-final">
+      <div class="final-title">🎯 ¡Misión #011 Completada!</div>
+      <p class="final-desc">Identificaste a 4 personas usando <strong>búsqueda inversa facial, pivoting y verificación cruzada</strong>. Estas son las técnicas que usan investigadores profesionales, periodistas y analistas de inteligencia.</p>
+      <a class="map-link" href="https://gralhix.com/list-of-osint-exercises/osint-exercise-011/" target="_blank">📖 Ver solución oficial</a>
+      <div style="margin-top:1.5rem; background:var(--bg3); border-radius:8px; padding:1rem; text-align:left; max-width:480px; margin-left:auto; margin-right:auto;">
+        <div style="color:var(--cyan); font-size:0.8rem; font-weight:700; margin-bottom:0.5rem;">📖 LO QUE APRENDISTE</div>
+        <ul style="color:var(--muted); font-size:0.85rem; padding-left:1.2rem; line-height:1.8;">
+          <li><strong style="color:var(--white)">Yandex Images</strong> como motor de reconocimiento facial superior</li>
+          <li><strong style="color:var(--white)">Pivoting desde personas:</strong> una identidad abre el camino a las demás</li>
+          <li><strong style="color:var(--white)">Galerías de prensa</strong> como fuente de nombres etiquetados</li>
+          <li><strong style="color:var(--white)">Verificación doble:</strong> nunca concluyas con una sola fuente</li>
+          <li><strong style="color:var(--white)">Paciencia:</strong> los casos difíciles requieren metodología, no suerte</li>
+        </ul>
+      </div>
+    </div>
+  </div><!-- /mission-011 -->
+
 </div>
 
 <script>
@@ -2031,7 +2289,7 @@
     el.style.display = el.style.display === 'block' ? 'none' : 'block';
   }
 
-  const missionState = { '001': new Set(), '002': new Set(), '003': new Set(), '004': new Set(), '006': new Set() };
+  const missionState = { '001': new Set(), '002': new Set(), '003': new Set(), '004': new Set(), '006': new Set(), '011': new Set() };
 
   function markDone(missionId, n, total) {
     const state = missionState[missionId];
